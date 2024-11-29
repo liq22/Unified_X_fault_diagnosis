@@ -1,0 +1,23 @@
+signal_processing_configs:
+  layer1: ['$HT$','WF','$I$']
+  layer2: ['$HT$','WF','$I$']
+  layer3: ['$HT$','WF','$I$']
+  layer4: ['$HT$','WF','$I$']   
+
+feature_extractor_configs: ['$Mean$', '$Std$', '$Var$','$Entropy$',
+ '$Max$', '$Min$', '$AbsMean$', '$Kurtosis$','$RMS$','$CrestFactor$',
+ '$Skewness$','$ClearanceFactor$','$ShapeFactor$']
+# logical_configs:
+  # channel_1:
+  #   features: ['$Mean$', '$Std$']
+  # channel_2:
+  #   features: ['$Mean$', '$Std$']
+args:
+  skip_connection: true
+  num_classes: 5
+  device: cuda
+  in_dim : 4096
+  out_dim : 4096
+  in_channels : 1 
+  scale : 1
+

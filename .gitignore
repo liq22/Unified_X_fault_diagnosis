@@ -160,3 +160,62 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+
+# 编译产生的文件
+*.o
+*.a
+*.so
+/save
+*.pyc
+# 日志文件
+*.log
+wandb/
+# 临时文件
+*.tmp
+
+# IDE生成的文件
+.idea/
+*.iml
+
+# Node.js 产生的文件
+node_modules/
+
+# Python 产生的文件
+__pycache__/
+*.py[cod]
+
+# macOS 产生的文件
+.DS_Store
+*.pyc
+__pycache__/
+MCN-main-main/
+TFN-main/
+*.pdf
+*.png
+main_ablation_exp.py
+main_com_kshotexp.py
+main_kshotexp.py
+plot.zip
+*.csv
+*.ai
+*.npy
+*.svg
+./post
+
+/1_paperfig
+
+1_paperfig/figs/素材/case1feature/Resnettsne_all_models.svg
+# post_analysis.ipynb
+
+# post_analysis.ipynb
+main_kshotexp.py
+post_analysis.ipynb
+post_analysis.ipynb
+post_analysis.ipynb
+wandb/run-20240626_205217-20h2ghze/run-20h2ghze.wandb
+/sweep_config
+script/NNSPN_paper/sweep_config/
+post/Attention_paper/
+*.npz
+*.ipynb
