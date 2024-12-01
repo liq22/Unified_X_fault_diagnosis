@@ -1,0 +1,1 @@
+python main.py --config_dir configs/THU_018/config_TSPN.yaml

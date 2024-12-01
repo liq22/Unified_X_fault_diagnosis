@@ -28,13 +28,13 @@ def trainer_set(args,path):
     callback_list = call_backs(args,path)
 
     if not hasattr(args, 'wandb_flag'):
-        setattr(args, 'wandb_flag', True)  # TODO add this arg to fix bug
+        setattr(args, 'wandb_flag', False)  # TODO add this arg to fix bug
     log_list = [CSVLogger(path, name="logs"),wandb_logger] if args.wandb_flag else [CSVLogger(path, name="logs")]
 
     accelerate_type = 'cpu' if args.device == 'cpu' else 'auto'
     
     trainer = pl.Trainer(callbacks=callback_list,
-                         profiler='pytorch',
+                        #  profiler='pytorch', # TODO args
                          accelerator = accelerate_type,
                         max_epochs=args.num_epochs,
                         devices= args.gpus,
