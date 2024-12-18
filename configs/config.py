@@ -1,5 +1,5 @@
 from ast import arg
-from os import pread
+# from os import pread
 from altair import AllSortString
 import torch
 from torch import nn
@@ -45,7 +45,7 @@ ALL_SP = {
     'HT': HilbertTransform,
     'WF': WaveFilters,
     'I': Identity,
-    
+    'PR': PR,
     'RWF':RickerWaveletFilter,
     'LWF':LaplaceWaveletFilter,
     'CWF':ChirpletWaveletFilter,
