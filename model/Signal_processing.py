@@ -415,6 +415,7 @@ class SinOperation(SignalProcessingBase):
         return torch.sin(self.fre * x)
     
 class PR(SignalProcessingBase):
+    # poles and residues module
     def __init__(self, args):
         super(PR, self).__init__(args)
         self.name = "PR"

@@ -21,7 +21,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='TSPN')
 
     # 添加参数
-    parser.add_argument('--config_dir', type=str, default='configs/THU_018/config_TSPN.yaml',
+    parser.add_argument('--config_dir', type=str, default='configs/HUST/config_basic.yaml',
                         help='The directory of the configuration file')
 
     meta_args = parser.parse_args()
