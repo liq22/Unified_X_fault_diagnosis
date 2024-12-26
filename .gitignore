@@ -168,6 +168,7 @@ cython_debug/
 *.so
 /save
 *.pyc
+script/save/
 # 日志文件
 *.log
 wandb/
