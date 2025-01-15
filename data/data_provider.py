@@ -1,5 +1,5 @@
 from torch.utils.data import DataLoader
-from data.datasets import THU_006or018_basic, THU_006or018_few_shot, THU_006_generalization,DIRG_020_basic,DIRG_020_generalization,HUST_or_SEU_Basic
+from data.datasets import THU_006or018_basic, THU_006or018_few_shot, THU_006_generalization,DIRG_020_basic,DIRG_020_generalization, HUST_031orSEU_010_basic
 from .utils import AddNoiseTransform
 
 DATASET_TASK_CLASS = {
@@ -10,8 +10,8 @@ DATASET_TASK_CLASS = {
     'THU_006_generalization': THU_006_generalization,
     'DIRG_020_basic': DIRG_020_basic,
     'DIRG_020_geberalization': DIRG_020_generalization,
-    'HUST_Basic': HUST_or_SEU_Basic,
-    'SEU_Basic': HUST_or_SEU_Basic
+    'HUST_031_Basic': HUST_031orSEU_010_basic,
+    'SEU_010_Basic': HUST_031orSEU_010_basic
 }
 
 def get_data(args):

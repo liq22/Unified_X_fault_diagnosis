@@ -45,7 +45,7 @@ ALL_SP = {
     'HT': HilbertTransform,
     'WF': WaveFilters,
     'I': Identity,
-    'PR': PR,
+    'LNO': Laplace_neural_operator,
     'RWF':RickerWaveletFilter,
     'LWF':LaplaceWaveletFilter,
     'CWF':ChirpletWaveletFilter,

@@ -1,17 +1,17 @@
 signal_processing_configs:
-  layer1: ['HT','PR','I']
-  layer2: ['HT','PR','I']
-  layer3: ['HT','PR','I']
-  layer4: ['HT','PR','I']
+  layer1: ['I','LNO','I']
+  layer2: ['I','LNO','I']
+  layer3: ['I','LNO','I']
+  layer4: ['I','LNO','I']
 
 feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMean', 'Kurtosis', 'RMS', 'CrestFactor','Skewness', 'ClearanceFactor', 'ShapeFactor']
 
 args:
 
   device: cuda
-  data_dir: 'C:/Users/CCSLab/Desktop/SEU_bearing/' # '/home/user/data/a_bearing/a_006_THU_pro/LQ_fusion/' '/home/user/data/a_bearing/a_018_THU24_pro/'
-  dataset_task: SEU_Basic # THU_006_basic THU_006_generalization THU_006_fusion THU_018_basic THU_018_generalization THU_018_fusion
-  target: 'SEU_bearing_20Hz_5' # if basic or generalization 1hz 10hz 15hz
+  data_dir: 'C:/Users/CCSLab/Desktop/SEU_bearing/' 
+  dataset_task: SEU_010_Basic 
+  target: 'SEU_bearing_20Hz_2' # SEU_bearing_20Hz_2, SEU_bearing_30Hz_2
   k_shot: 64
 
 
@@ -21,7 +21,7 @@ args:
   num_classes: 5
   in_dim : 4096
   out_dim : 4096
-  in_channels : 8
+  in_channels : 2
   out_channels : 3
   scale : 4
 
