@@ -38,7 +38,7 @@ if __name__ == '__main__':
     config_dir = meta_args.config_dir
     configs,args,path = parse_arguments(config_dir)
 
-    seed_everything(args.seed)    
+    # seed_everything(args.seed)    
 
 
     ff = np.arange(0, args.in_dim//2 + 1) / args.in_dim//2 + 1
