@@ -1,7 +1,7 @@
 args:
 
   device: cuda
-  data_dir: '/home/user/data/a_bearing/a_031_HUST/' 
+  data_dir: '/home/user/data/a_bearing/a_031_HUST_pro/' 
   dataset_task: HUST_031_Basic
   target: 'HUST_bearing_VS_0_40_0Hz' # HUST_bearing_20Hz, HUST_bearing_VS_0_40_0Hz
   k_shot: 64

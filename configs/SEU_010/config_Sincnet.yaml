@@ -1,7 +1,7 @@
 args:
 
   device: cuda
-  data_dir: '/home/user/data/a_bearing/a_010_SEU/' 
+  data_dir: '/home/user/data/a_bearing/a_010_SEU_pro/'  
   dataset_task: SEU_010_Basic
   target: 'SEU_bearing_20Hz_2' # SEU_bearing_20Hz_2, SEU_bearing_30Hz_2
   k_shot: 64
