@@ -9,7 +9,7 @@ feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMe
 args:
 
   device: cuda
-  data_dir: 'C:/Users/CCSLab/Desktop/SEU_bearing/' # '/home/user/data/a_bearing/a_006_THU_pro/LQ_fusion/' '/home/user/data/a_bearing/a_018_THU24_pro/'
+  data_dir: '/home/user/data/a_bearing/a_010_SEU_pro' # '/home/user/data/a_bearing/a_006_THU_pro/LQ_fusion/' '/home/user/data/a_bearing/a_018_THU24_pro/'
   dataset_task: SEU_Basic # THU_006_basic THU_006_generalization THU_006_fusion THU_018_basic THU_018_generalization THU_018_fusion
   target: 'SEU_bearing_20Hz_5' # if basic or generalization 1hz 10hz 15hz
   k_shot: 64
