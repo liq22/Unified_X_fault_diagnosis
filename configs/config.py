@@ -116,7 +116,7 @@ def parse_arguments(config_dir,it):
     if not os.path.exists(path):
         os.makedirs(path)
     args.path = path
-    return config,args,path
+    return config,args,path,name
 #### 暂时无用，和parse功能一样 ################
 def yaml_arguments(yaml_dir): # 暂时无用
     # 读取YAML文件

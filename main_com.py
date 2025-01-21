@@ -14,6 +14,7 @@ from trainer.utils import load_best_model_checkpoint
 # from configs.config import signal_processing_modules,feature_extractor_modules
 from configs.config import parse_arguments,config_network
 import os
+import wandb
 # os.environ['CUDA_VISIBLE_DEVICES'] = '0' for test ##########################
 
 import numpy as np
@@ -38,10 +39,10 @@ if __name__ == '__main__':
     meta_args = parser.parse_args()
     config_dir = meta_args.config_dir
     for it in range(iteration):
-        configs,args,path = parse_arguments(config_dir,it)
+        configs,args,path,name = parse_arguments(config_dir,it)
         
         seed_everything(args.seed + it) # 17 args.seed 
-
+        wandb.init(project=args.dataset_task, name=name) 
 
         ff = np.arange(0, args.in_dim//2 + 1) / args.in_dim//2 + 1
 
@@ -69,3 +70,4 @@ if __name__ == '__main__':
         # 保存结果
         result_df = pd.DataFrame(result)
         result_df.to_csv(os.path.join(path, 'test_result.csv'), index=False)
+        wandb.finish()
