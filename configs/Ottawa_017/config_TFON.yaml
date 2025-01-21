@@ -1,0 +1,68 @@
+############### model_structure ####################
+
+signal_processing_configs:
+  layer1: ['SBCT','SBCT','SBCT']  # time to TF
+  layer2: ['GF','GF','GF'] # GF
+
+
+
+feature_extractor_configs: ['Std', 'Var', 'Entropy', 'Kurtosis', 'RMS','Skewness']
+# logical_configs:
+
+###################### data\model##################
+
+
+args:
+  # debug: True
+  device: cuda
+
+
+# data_dir: 
+  data_dir: '/home/user/data/a_bearing/a_018_THU24_pro/' # '/home/user/data/a_bearing/a_006_THU_pro/LQ_fusion/' '/home/user/data/a_bearing/a_018_THU24_pro/'
+  dataset_task: THU_018_basic # THU_006_basic THU_006_generalization THU_006_fusion THU_018_basic THU_018_generalization THU_018_fusion
+  target: 'IF' # if basic or generalization 1hz 10hz 15hz
+  k_shot: 64
+  fs: 25600
+
+# model
+  model: TFON
+  skip_connection: False # 2D 算子不用skip
+  num_classes: 5 # 5 for THU_018_basic 4 for THU_006_basic
+  scale : 1
+
+# common_configs
+  in_dim: 4096
+  out_dim: None
+  in_channels: 1
+  out_channels: 3 # scale * len(OP)
+  window: 'gaussian' # 'gaussian' 'hann' 'hamming' 'blackman' 'bartlett' 'boxcar'
+  window_length: 256
+  stride: 5
+  CI_name: 'Kurtosis' # 
+  search_dim: 20
+  tf_in_channel: 1 # 1 for SBCT
+
+# SBCT_params
+  order: 2
+
+# GF_params
+  t_dim: 818 # in_dim - stride // stride 
+  f_dim: 818
+
+# hyperparameter
+  learning_rate: 0.001
+  batch_size: 64
+  num_epochs: 5
+  weight_decay: 0.0001
+  num_workers: 32
+  seed: 17
+
+# train
+  monitor: 'val_loss'
+  patience: 8
+  gpus: 1
+  weight_decay: 0.0001
+  l1_norm: 0.01
+
+  pruning: None # [0.7,0.5,0.01]
+  snr: 1
