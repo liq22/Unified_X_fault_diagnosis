@@ -1,24 +1,15 @@
-signal_processing_configs:
-  layer1: ['HT','LNO','I']
-  layer2: ['HT','LNO','I']
-  layer3: ['HT','LNO','I']
-  layer4: ['HT','LNO','I']
-
-feature_extractor_configs: ['Mean', 'Std']
-
 args:
 
   device: cuda
-  data_dir: '/home/user/data/a_bearing/a_031_HUST_pro' 
+  data_dir: '/home/user/data/a_bearing/a_031_HUST/' 
   dataset_task: HUST_031_Basic
   target: 'HUST_bearing_VS_0_40_0Hz' # HUST_bearing_20Hz, HUST_bearing_VS_0_40_0Hz
   k_shot: 64
 
-
 # model
-  model: TSPN
+  model: 'Resnet' # 'Resnet' 'WKN_m' 'Sinc_net_m' 'Huan_net' 'TFN_Morlet' 'MCN_GFK'
   skip_connection: true
-  num_classes: 9
+  num_classes: 9 # 5 for THU_018_basic 4 for THU_006_basic
   in_dim : 4096
   out_dim : 4096
   in_channels : 3
@@ -35,15 +26,15 @@ args:
   batch_size: 64
   num_epochs: 30
   weight_decay: 0.0001
-  num_workers: 8
+  num_workers: 32
   seed: 17
 
 # train
   monitor: 'val_loss'
   patience: 200
-  gpus: 1
+  gpus: 8
   weight_decay: 0.0001
-  l1_norm: 0.0001
+  l1_norm: 0.01
 
   pruning: None # [0.7,0.5,0.01]
-  snr: 0
+  snr: 1

@@ -414,11 +414,11 @@ class SinOperation(SignalProcessingBase):
     def forward(self, x):
         return torch.sin(self.fre * x)
     
-class PR(SignalProcessingBase):
-    # poles and residues module
+class Laplace_neural_operator(SignalProcessingBase):
+    # LNO
     def __init__(self, args):
-        super(PR, self).__init__(args)
-        self.name = "PR"
+        super(Laplace_neural_operator, self).__init__(args)
+        self.name = "LNO"
         self.modes1 = 16
         self.scale = (1 / (args.scale*args.scale))
         self.weights_pole = nn.Parameter(self.scale * torch.rand(args.scale, args.scale, self.modes1, dtype=torch.cfloat))

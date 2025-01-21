@@ -9,9 +9,9 @@ feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMe
 args:
 
   device: cuda
-  data_dir: '/home/user/data/a_bearing/a_031_HUST_pro' # '/home/user/data/a_bearing/a_006_THU_pro/LQ_fusion/' '/home/user/data/a_bearing/a_018_THU24_pro/'
-  dataset_task: HUST_Basic # THU_006_basic THU_006_generalization THU_006_fusion THU_018_basic THU_018_generalization THU_018_fusion
-  target: 'HUST_bearing_20Hz' # if basic or generalization 1hz 10hz 15hz
+  data_dir: '/home/user/data/a_bearing/a_031_HUST_pro' 
+  dataset_task: HUST_031_Basic
+  target: 'HUST_bearing_VS_0_40_0Hz' # HUST_bearing_20Hz, HUST_bearing_VS_0_40_0Hz
   k_shot: 64
 
 

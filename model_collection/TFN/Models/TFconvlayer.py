@@ -12,6 +12,7 @@ import os
 import torch.nn.init as init
 import math
 import torch.nn.functional as F
+from einops import rearrange
 
 # random seed
 seed = 999
@@ -60,6 +61,7 @@ class BaseConv1d(nn.Module):
 
     def forward(self, input):
         result = {}
+        input = rearrange(input, 'b l c -> b c l')
         # the output of the convolution layer is the square root of the sum of the squares of the real and imaginary parts
         for phase in self.phases:
             if self.bias is None:

@@ -78,7 +78,7 @@ class MultiChannel_MCN_GFK(nn.Module):
         )
 
     def forward(self, inputs):
-        out = torch.cat([self.features[i](inputs[:, i].unsqueeze(1)) for i in range(len(self.features))], dim=1)
+        out = torch.cat([self.features[i](inputs[:, :, i].unsqueeze(1)) for i in range(len(self.features))], dim=1)
         out = self.conv(out.real)
         out = self.AdpAvgpool(out)
         out = self.flatten(out)

@@ -285,7 +285,7 @@ class DIRG_020_generalization(Dataset):
         
         return sample, label
     
-class HUST_or_SEU_Basic(Dataset):
+class HUST_031orSEU_010_basic(Dataset):
     def __init__(self, args, flag):
         self.flag = flag
         self.data_loader(args.data_dir, args.target)
