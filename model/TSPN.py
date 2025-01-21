@@ -1,6 +1,6 @@
 
 from scipy import optimize
-import torch 
+import torch
 import torch.nn as nn
 from einops import rearrange
 import torch.nn.functional as F

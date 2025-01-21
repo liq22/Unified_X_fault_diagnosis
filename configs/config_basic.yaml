@@ -1,10 +1,10 @@
 ############### model_config ####################
 
 signal_processing_configs:
-  layer1: ['I','WF','I','I']  # BUG 重复就删去
+  layer1: ['I','WF','I','I']  # BUG �ظ���ɾȥ
   layer2: ['I','WF','I','I']
   layer3: ['I','WF','I','I']
-  layer4: ['I','WF','I','I'] 
+  layer4: ['I','WF','I','I']
 
 
 feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMean', 'Kurtosis', 'RMS', 'CrestFactor','Skewness', 'ClearanceFactor', 'ShapeFactor']
@@ -16,7 +16,7 @@ args:
 ###################### data ##################
 
   # data_dir: 
-  data_dir: '/home/user/data/a_bearing/a_018_THU24_pro/' # '/home/user/data/a_bearing/a_006_THU_pro/LQ_fusion/' '/home/user/data/a_bearing/a_018_THU24_pro/'
+  data_dir: 'C:/Users/CCSLab/Desktop/lixuan/TON/' # '/home/user/data/a_bearing/a_006_THU_pro/LQ_fusion/' '/home/user/data/a_bearing/a_018_THU24_pro/'
   dataset_task: THU_018_basic # THU_006_basic THU_006_generalization THU_006_fusion THU_018_basic THU_018_generalization THU_018_fusion
   target: 'IF' # if basic or generalization 1hz 10hz 15hz
   k_shot: 64
@@ -39,9 +39,9 @@ args:
 # hyperparameter
   learning_rate: 0.001
   batch_size: 64
-  num_epochs: 5
+  num_epochs: 20
   weight_decay: 0.0001
-  num_workers: 32
+  num_workers: 8 #32
   seed: 17
 
 # train

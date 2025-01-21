@@ -1,5 +1,5 @@
 from ast import arg
-from os import pread
+# from os import pread
 from altair import AllSortString
 import torch
 from torch import nn
@@ -45,7 +45,7 @@ ALL_SP = {
     'HT': HilbertTransform,
     'WF': WaveFilters,
     'I': Identity,
-    
+    'LNO': Laplace_neural_operator,
     'RWF':RickerWaveletFilter,
     'LWF':LaplaceWaveletFilter,
     'CWF':ChirpletWaveletFilter,
@@ -93,7 +93,7 @@ ALL_LI = {
     'sdisj': StrongDisjunctionOperation,
 }
 
-def parse_arguments(config_dir):
+def parse_arguments(config_dir,it):
     # 解析参数
     
     # args_dir = parser.parse_args()
@@ -107,7 +107,7 @@ def parse_arguments(config_dir):
     
     # dataset = args.data_dir[-3:].replace('/','')
     time_stamp = time.strftime("%d-%H-%M-%S", time.localtime())
-    name = f'model_{args.model}time{time_stamp}_lr{args.learning_rate}_epochs{args.num_epochs}_dataset{args.dataset_task}'
+    name = f'model_{args.model}time{time_stamp}_lr{args.learning_rate}_epochs{args.num_epochs}_dataset{args.dataset_task}_it{it}'
 
     print(f'Running experiment: {name}')
     
@@ -116,7 +116,7 @@ def parse_arguments(config_dir):
     if not os.path.exists(path):
         os.makedirs(path)
     args.path = path
-    return config,args,path
+    return config,args,path,name
 #### 暂时无用，和parse功能一样 ################
 def yaml_arguments(yaml_dir): # 暂时无用
     # 读取YAML文件

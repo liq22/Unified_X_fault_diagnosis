@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as Fs
 import sys
+import numpy as np
 import os
 from einops import rearrange
 # 获取当前脚本所在目录
@@ -116,15 +117,19 @@ class HilbertTransform(SignalProcessingBase):
         super(HilbertTransform, self).__init__(args)
         self.name = "HT"
     def forward(self, x):
-        N = x.shape[-1]
-        Xf = torch.fft.fft(x, dim=1)  # 对最后一个维度执行FFT
+        # N = x.shape[-1]
+        x = rearrange(x, 'b l c -> b c l')
+        N = x.shape[-1] # 对length进行Hilbert变换
+        Xf = torch.fft.fft(x, dim=2)  # 对length维度执行FFT
         if (N % 2 == 0):
             Xf[..., 1:N // 2] *= 2
             Xf[..., N // 2 + 1:] = 0
         else:
             Xf[..., 1:(N + 1) // 2] *= 2
             Xf[..., (N + 1) // 2:] = 0
-        return torch.fft.ifft(Xf, dim=1).abs()
+        Hilbert_x = torch.fft.ifft(Xf, dim=2).abs()
+        x = rearrange(Hilbert_x, 'b c l -> b l c')
+        return x
     #%%
 # 3 ##############################################  WaveFilters module  ############################################## 
 class WaveFilters(SignalProcessingBase): # TII中的实现
@@ -412,6 +417,55 @@ class SinOperation(SignalProcessingBase):
 
     def forward(self, x):
         return torch.sin(self.fre * x)
+    
+class Laplace_neural_operator(SignalProcessingBase):
+    # LNO
+    def __init__(self, args):
+        super(Laplace_neural_operator, self).__init__(args)
+        self.name = "LNO"
+        self.modes1 = 16
+        self.scale = (1 / (args.scale*args.scale))
+        self.weights_pole = nn.Parameter(self.scale * torch.rand(args.scale, args.scale, self.modes1, dtype=torch.cfloat))
+        self.weights_residue = nn.Parameter(self.scale * torch.rand(args.scale, args.scale, self.modes1, dtype=torch.cfloat))
+       
+    def output_PR(self, lambda1,alpha, weights_pole, weights_residue):   
+        Hw=torch.zeros(weights_residue.shape[0],weights_residue.shape[0],weights_residue.shape[2],lambda1.shape[0], device=alpha.device, dtype=torch.cfloat)
+        term1=torch.div(1,torch.sub(lambda1,weights_pole))
+        Hw=weights_residue*term1
+        output_residue1=torch.einsum("bix,xiok->box", alpha, Hw) 
+        output_residue2=torch.einsum("bix,xiok->bok", alpha, -Hw) 
+        return output_residue1,output_residue2    
+
+    def forward(self, x):
+        x = rearrange(x, 'b l c -> b c l')
+        # t = grid_x_train.cuda()
+        # x.shape = (batch_size, width, length),20,4,2048
+        t = torch.linspace(0, 1, steps=x.shape[-1], dtype=x.dtype, device=x.device)
+        #Compute input poles and resudes by FFT
+        dt=(t[1]-t[0]).item()
+        alpha = torch.fft.fft(x)
+        lambda0=torch.fft.fftfreq(t.shape[0], dt)*2*np.pi*1j
+        lambda1=lambda0.unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)
+        lambda1=lambda1.cuda()
+    
+        # Obtain output poles and residues for transient part and steady-state part
+        output_residue1,output_residue2= self.output_PR(lambda1, alpha, self.weights_pole, self.weights_residue)
+    
+        # Obtain time histories of transient response and steady-state response
+        x1 = torch.fft.ifft(output_residue1, n=x.size(-1))
+        x1 = torch.real(x1)
+        x2 = torch.zeros(output_residue2.shape[0],output_residue2.shape[1],t.shape[0], device=alpha.device, dtype=torch.cfloat)
+        term1 = torch.einsum("bix,kz->bixz", self.weights_pole, t.type(torch.complex64).reshape(1,-1))
+        term2 = torch.exp(term1)
+        x2 = torch.einsum("bix,ioxz->boz", output_residue2,term2)
+        x2 = torch.real(x2)
+        x2 = x2/x.size(-1)
+        x = x1+x2
+        # Norm = nn.InstanceNorm1d(x.size(1))
+        # x = Norm(x)
+        x = rearrange(x, 'b c l -> b l c')
+        return x
+
 
 ###############################################2 arity###################################################
 class AddOperation(SignalProcessingBase2Arity):
@@ -444,7 +498,7 @@ if __name__ == "__main__":
     import copy
     class SignalProcessingArgs:
         def __init__(self):
-            self.device = 'cpu'
+            self.device = 'cuda'
             self.f_c_mu = 0.1
             self.f_c_sigma = 0.01
             self.f_b_mu = 0.1

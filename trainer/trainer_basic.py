@@ -16,18 +16,18 @@ def check_attr(args,attr = 'attention_norm'):
         setattr(args, attr, False)
 
 class Basic_plmodel(pl.LightningModule):
-    def __init__(self, network,args):
+    def __init__(self, network, args):
         super().__init__()
         self.network = network # placeholder
         self.args = args
         self.loss = nn.CrossEntropyLoss()
-        self.acc_val = torchmetrics.Accuracy(task = "multiclass",num_classes = args.num_classes)
-        self.acc_train = torchmetrics.Accuracy(task = "multiclass",num_classes = args.num_classes)
-        self.acc_test = torchmetrics.Accuracy(task = "multiclass",num_classes = args.num_classes)
+        self.acc_val = torchmetrics.Accuracy(task="multiclass", num_classes=args.num_classes)
+        self.acc_train = torchmetrics.Accuracy(task="multiclass", num_classes=args.num_classes)
+        self.acc_test = torchmetrics.Accuracy(task="multiclass", num_classes=args.num_classes)
         
         args_dict = vars(args)
         self.save_hyperparameters(args_dict,
-                                  ignore = ['network'])
+                                  ignore=['network'])
     
         # print('### network:\n',self.network)
         
