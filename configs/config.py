@@ -93,7 +93,7 @@ ALL_LI = {
     'sdisj': StrongDisjunctionOperation,
 }
 
-def parse_arguments(config_dir):
+def parse_arguments(config_dir,it):
     # 解析参数
     
     # args_dir = parser.parse_args()
@@ -107,7 +107,7 @@ def parse_arguments(config_dir):
     
     # dataset = args.data_dir[-3:].replace('/','')
     time_stamp = time.strftime("%d-%H-%M-%S", time.localtime())
-    name = f'model_{args.model}time{time_stamp}_lr{args.learning_rate}_epochs{args.num_epochs}_dataset{args.dataset_task}'
+    name = f'model_{args.model}time{time_stamp}_lr{args.learning_rate}_epochs{args.num_epochs}_dataset{args.dataset_task}_it{it}'
 
     print(f'Running experiment: {name}')
     

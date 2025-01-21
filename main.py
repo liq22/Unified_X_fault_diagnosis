@@ -16,7 +16,8 @@ import os
 import pandas as pd
 import multiprocessing
 if __name__ == '__main__':
-    multiprocessing.freeze_support()
+    # multiprocessing.freeze_support()
+    iter = 1
     # 创建解析器
     parser = argparse.ArgumentParser(description='TSPN')
 
@@ -29,7 +30,8 @@ if __name__ == '__main__':
 
     configs,args,path = parse_arguments(config_dir)
 
-    seed_everything(17) # 17 args.seed
+    
+    seed_everything(args.seed) # 17 args.seed
 
     # 初始化模型
     signal_processing_modules, feature_extractor_modules = config_network(configs,args)

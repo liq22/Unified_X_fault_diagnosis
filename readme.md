@@ -242,3 +242,9 @@ DATASET_TASK_CLASS = {
 # 逻辑推理模块
 
 TODO
+
+
+# 模型规约
+
+1. 1D 模型
+2. 2D 时频模型
