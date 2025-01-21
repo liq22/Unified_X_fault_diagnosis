@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     configs,args,path = parse_arguments(config_dir)
 
-    seed_everything(args.seed)
+    seed_everything(17) # 17 args.seed
 
     # 初始化模型
     signal_processing_modules, feature_extractor_modules = config_network(configs,args)
