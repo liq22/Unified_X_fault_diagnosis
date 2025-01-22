@@ -9,19 +9,19 @@ feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMe
 args:
 
   device: cuda
-  data_dir: '/home/user/data/a_bearing/a_010_SEU_pro/'  
-  dataset_task: SEU_010_Basic
-  target: 'SEU_bearing_20Hz_2' # SEU_bearing_20Hz_2, SEU_bearing_30Hz_2
+  data_dir: '/home/user/data/a_bearing/a_031_HUST_pro/' 
+  dataset_task: HUST_031_Basic
+  target: 'HUST_bearing_VS_0_40_0Hz' # HUST_bearing_20Hz, HUST_bearing_VS_0_40_0Hz
   k_shot: 64
 
 
 # model
   model: TSPN
   skip_connection: true
-  num_classes: 5
+  num_classes: 9
   in_dim : 4096
   out_dim : 4096
-  in_channels : 2
+  in_channels : 3
   out_channels : 3
   scale : 4
 
@@ -40,7 +40,7 @@ args:
 
 # train
   monitor: 'val_loss'
-  patience: 200
+  patience: 100
   gpus: 1
   weight_decay: 0.0001
   l1_norm: 0.0001

@@ -9,8 +9,8 @@ feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMe
 args:
 
   device: cuda
-  data_dir: '/home/user/data/a_bearing/a_031_HUST_pro' 
-  dataset_task: SEU_010_Basic 
+  data_dir: '/home/user/data/a_bearing/a_010_SEU_pro/'  
+  dataset_task: SEU_010_Basic
   target: 'SEU_bearing_20Hz_2' # SEU_bearing_20Hz_2, SEU_bearing_30Hz_2
   k_shot: 64
 
@@ -33,14 +33,14 @@ args:
 # hyperparameter
   learning_rate: 0.001
   batch_size: 64
-  num_epochs: 20
+  num_epochs: 200
   weight_decay: 0.0001
-  num_workers: 8
+  num_workers: 32
   seed: 17
 
 # train
   monitor: 'val_loss'
-  patience: 200
+  patience: 100
   gpus: 1
   weight_decay: 0.0001
   l1_norm: 0.0001
