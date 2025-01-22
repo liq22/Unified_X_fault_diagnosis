@@ -10,6 +10,7 @@ from Signal_processing import SignalProcessingBase,\
         WaveFilters,\
         Identity
 from Signal_processing import *
+from Signal_processing_2D import *
 
 from Feature_extract import FeatureExtractionBase,\
         FeatureExtractionModuleDict,\
@@ -58,6 +59,8 @@ ALL_SP = {
     'Mul':MulOperation,
     'Div':DivOperation,
     
+    'SBCT':SBCT_NOP,
+    'GF':GlobalFilterOperator,
     
 }
 ALL_FE = {
@@ -96,7 +99,7 @@ from collections import OrderedDict
 import yaml
 from types import SimpleNamespace
 
-config_dir = 'configs/THU_006/config_DEN_gen.yaml'# configs/config_basic.yaml
+config_dir = 'configs/config_basic_2D.yaml'# configs/config_basic.yaml configs/THU_006/config_DEN_gen.yaml
 # 读取YAML文件
 with open(config_dir, 'r') as f:
     config = yaml.safe_load(f)

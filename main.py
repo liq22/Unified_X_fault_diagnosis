@@ -15,8 +15,10 @@ from configs.config import parse_arguments,config_network
 import os
 import pandas as pd
 import multiprocessing
+import wandb
 if __name__ == '__main__':
-    multiprocessing.freeze_support()
+    # multiprocessing.freeze_support()
+    iteration = 1
     # 创建解析器
     parser = argparse.ArgumentParser(description='TSPN')
 
@@ -26,39 +28,42 @@ if __name__ == '__main__':
 
     meta_args = parser.parse_args()
     config_dir = meta_args.config_dir
-
-    configs,args,path = parse_arguments(config_dir)
-
-    seed_everything(17) # 17 args.seed
-
-    # 初始化模型
-    signal_processing_modules, feature_extractor_modules = config_network(configs,args)
+    for it in range(iteration):
+        configs,args,path,name = parse_arguments(config_dir,it)
+        
+        seed_everything(args.seed + it) # 17 args.seed 
+        wandb.init(project=args.dataset_task, name=name) 
 
 
-    MODEL_DICT = {
-        'TSPN': lambda args: Transparent_Signal_Processing_Network(signal_processing_modules, feature_extractor_modules,args),
-        'TKAN': lambda args: Transparent_Signal_Processing_KAN(signal_processing_modules, feature_extractor_modules,args),
-        'NNSPN': lambda args: NN_Signal_Processing_Network(signal_processing_modules, feature_extractor_modules,args),
-    }
+        # 初始化模型
+        signal_processing_modules, feature_extractor_modules = config_network(configs,args)
 
-    model_plain = MODEL_DICT[args.model](args)
 
-    # network = Transparent_Signal_Processing_Network(signal_processing_modules, feature_extractor_modules,args)
-    #model trainer #
-    model = Basic_plmodel(model_plain, args)
-    model_structure = print(model.network)
-    trainer,train_dataloader, val_dataloader, test_dataloader = trainer_set(args,path)
+        MODEL_DICT = {
+            'TSPN': lambda args: Transparent_Signal_Processing_Network(signal_processing_modules, feature_extractor_modules,args),
+            'TKAN': lambda args: Transparent_Signal_Processing_KAN(signal_processing_modules, feature_extractor_modules,args),
+            'NNSPN': lambda args: NN_Signal_Processing_Network(signal_processing_modules, feature_extractor_modules,args),
+        }
 
-    # train
-    trainer.fit(model,train_dataloader, val_dataloader) # TODO load best checkpoint
+        model_plain = MODEL_DICT[args.model](args)
 
-    model = load_best_model_checkpoint(model,trainer)
+        # network = Transparent_Signal_Processing_Network(signal_processing_modules, feature_extractor_modules,args)
+        #model trainer #
+        model = Basic_plmodel(model_plain, args)
+        model_structure = print(model.network)
+        trainer,train_dataloader, val_dataloader, test_dataloader = trainer_set(args,path)
 
-    result = trainer.test(model,test_dataloader)
+        # train
+        trainer.fit(model,train_dataloader, val_dataloader) # TODO load best checkpoint
 
-    # 保存结果
-    result_df = pd.DataFrame(result)
-    result_df.to_csv(os.path.join(path, 'test_result.csv'), index=False)
+        model = load_best_model_checkpoint(model,trainer)
+
+        result = trainer.test(model,test_dataloader)
+
+        # 保存结果
+        result_df = pd.DataFrame(result)
+        result_df.to_csv(os.path.join(path, 'test_result.csv'), index=False)
+        wandb.finish()
 
 
 

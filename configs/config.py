@@ -93,7 +93,7 @@ ALL_LI = {
     'sdisj': StrongDisjunctionOperation,
 }
 
-def parse_arguments(config_dir):
+def parse_arguments(config_dir,it):
     # 解析参数
     
     # args_dir = parser.parse_args()
@@ -107,7 +107,7 @@ def parse_arguments(config_dir):
     
     # dataset = args.data_dir[-3:].replace('/','')
     time_stamp = time.strftime("%d-%H-%M-%S", time.localtime())
-    name = f'model_{args.model}time{time_stamp}_lr{args.learning_rate}_epochs{args.num_epochs}_dataset{args.dataset_task}'
+    name = f'model_{args.model}time{time_stamp}_lr{args.learning_rate}_epochs{args.num_epochs}_dataset{args.dataset_task}_it{it}'
 
     print(f'Running experiment: {name}')
     
@@ -116,7 +116,7 @@ def parse_arguments(config_dir):
     if not os.path.exists(path):
         os.makedirs(path)
     args.path = path
-    return config,args,path
+    return config,args,path,name
 #### 暂时无用，和parse功能一样 ################
 def yaml_arguments(yaml_dir): # 暂时无用
     # 读取YAML文件
@@ -185,32 +185,32 @@ def get_unique_module_name(existing_names, module_name):
         return unique_name
 # logic
 
-# import torch
-# import torch.nn as nn
-# import torch.nn.functional as F
-# from collections import OrderedDict
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from collections import OrderedDict
 
 
-# import yaml
-# from types import SimpleNamespace
+import yaml
+from types import SimpleNamespace
 
-# config_dir = 'configs/config_basic.yaml' # 从工作目录开始的相对路径
-# # 读取YAML文件
-# with open(config_dir, 'r') as f:
-#     config = yaml.safe_load(f)
-# args = SimpleNamespace(**config['args'])
+config_dir = 'configs/config_basic.yaml' # 从工作目录开始的相对路径
+# 读取YAML文件
+with open(config_dir, 'r') as f:
+    config = yaml.safe_load(f)
+args = SimpleNamespace(**config['args'])
 
 
 
-# signal_processing_modules = []
-# for layer in config['signal_processing_configs'].values():
-#     signal_module = OrderedDict()
-#     for module_name in layer:
-#         module_class = ALL_SP[module_name]
-#         signal_module[module_name] = module_class(args)  # 假设所有模块的构造函数不需要参数
-#     signal_processing_modules.append(SignalProcessingModuleDict(signal_module))
+signal_processing_modules = []
+for layer in config['signal_processing_configs'].values():
+    signal_module = OrderedDict()
+    for module_name in layer:
+        module_class = ALL_SP[module_name]
+        signal_module[module_name] = module_class(args)  # 假设所有模块的构造函数不需要参数
+    signal_processing_modules.append(SignalProcessingModuleDict(signal_module))
 
-# feature_extractor_modules = OrderedDict()
-# for feature_name in config['feature_extractor_configs']:
-#     module_class = ALL_FE[feature_name]
-#     feature_extractor_modules[feature_name] = module_class()  # 假设所有模块的构造函数不需要参数
+feature_extractor_modules = OrderedDict()
+for feature_name in config['feature_extractor_configs']:
+    module_class = ALL_FE[feature_name]
+    feature_extractor_modules[feature_name] = module_class()  # 假设所有模块的构造函数不需要参数

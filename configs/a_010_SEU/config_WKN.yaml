@@ -1,20 +1,21 @@
+
+
 args:
 
   device: cuda
-  data_dir: '/home/user/data/a_bearing/a_010_SEU/' 
+  data_dir: '/home/user/data/a_bearing/a_010_SEU_pro/'  
   dataset_task: SEU_010_Basic
   target: 'SEU_bearing_20Hz_2' # SEU_bearing_20Hz_2, SEU_bearing_30Hz_2
   k_shot: 64
-
 # model
-  model: 'Resnet' # 'Resnet' 'WKN_m' 'Sinc_net_m' 'Huan_net' 'TFN_Morlet' 'MCN_GFK'
+  model: 'WKN_m' # 'Resnet' 'WKN_m' 'Sinc_net_m' 'Huan_net' 'TFN_Morlet' 'MCN_GFK'
   skip_connection: true
   num_classes: 5 # 5 for THU_018_basic 4 for THU_006_basic
   in_dim : 4096
   out_dim : 4096
   in_channels : 2
   out_channels : 3
-  scale : 4
+  scale : 32
 
   f_c_mu: 0
   f_c_sigma: 0.1
@@ -31,8 +32,8 @@ args:
 
 # train
   monitor: 'val_loss'
-  patience: 200
-  gpus: 8
+  patience: 64
+  gpus: 1
   weight_decay: 0.0001
   l1_norm: 0.01
 

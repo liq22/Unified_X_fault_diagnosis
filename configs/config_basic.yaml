@@ -1,7 +1,7 @@
 ############### model_config ####################
 
 signal_processing_configs:
-  layer1: ['I','WF','I','I']  # BUG ÖØ¸´¾ÍÉ¾È¥
+  layer1: ['I','WF','I','I']  # BUG ï¿½Ø¸ï¿½ï¿½ï¿½É¾È¥
   layer2: ['I','WF','I','I']
   layer3: ['I','WF','I','I']
   layer4: ['I','WF','I','I']

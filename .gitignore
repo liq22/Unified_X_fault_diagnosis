@@ -220,3 +220,4 @@ script/NNSPN_paper/sweep_config/
 post/Attention_paper/
 *.npz
 *.ipynb
+/pre_exp
