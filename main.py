@@ -5,6 +5,7 @@ import argparse
 from model.TSPN import Transparent_Signal_Processing_Network 
 from model.TSPN_KAN import Transparent_Signal_Processing_KAN
 from model.NNSPN import NN_Signal_Processing_Network
+from model.TFON import Time_Frequency_Operator_Network
 from trainer.trainer_basic import Basic_plmodel
 from trainer.trainer_set import trainer_set
 from trainer.utils import load_best_model_checkpoint
@@ -18,7 +19,7 @@ import multiprocessing
 import wandb
 if __name__ == '__main__':
     # multiprocessing.freeze_support()
-    iteration = 1
+    iteration = 5
     # 创建解析器
     parser = argparse.ArgumentParser(description='TSPN')
 
@@ -43,6 +44,7 @@ if __name__ == '__main__':
             'TSPN': lambda args: Transparent_Signal_Processing_Network(signal_processing_modules, feature_extractor_modules,args),
             'TKAN': lambda args: Transparent_Signal_Processing_KAN(signal_processing_modules, feature_extractor_modules,args),
             'NNSPN': lambda args: NN_Signal_Processing_Network(signal_processing_modules, feature_extractor_modules,args),
+            'TFON': lambda args: Time_Frequency_Operator_Network(signal_processing_modules, feature_extractor_modules,args),
         }
 
         model_plain = MODEL_DICT[args.model](args)

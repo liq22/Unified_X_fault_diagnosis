@@ -1,17 +1,18 @@
 from torch.utils.data import DataLoader
-from data.datasets import THU_006or018_basic, THU_006or018_few_shot, THU_006_generalization,DIRG_020_basic,DIRG_020_generalization, HUST_031orSEU_010_basic
+from data.datasets import *
 from .utils import AddNoiseTransform
 
 DATASET_TASK_CLASS = {
-    'THU_006_basic': THU_006or018_basic,
-    'THU_018_basic': THU_006or018_basic,
+    'THU_006_basic': Default_dataset,
+    'THU_018_basic': Default_dataset,
     'THU_018_few_shot': THU_006or018_few_shot,
     'THU_006_few_shot': THU_006or018_few_shot,
     'THU_006_generalization': THU_006_generalization,
     'DIRG_020_basic': DIRG_020_basic,
     'DIRG_020_geberalization': DIRG_020_generalization,
-    'HUST_031_Basic': HUST_031orSEU_010_basic,
-    'SEU_010_Basic': HUST_031orSEU_010_basic
+    'HUST_031_Basic': Default_dataset,
+    'SEU_010_Basic': Default_dataset,
+    'a_017_Ottawa': Default_dataset,
 }
 
 def get_data(args):

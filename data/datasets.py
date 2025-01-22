@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 from .utils import AddNoiseTransform,select_validation_samples
 from sklearn.model_selection import train_test_split
 
-class THU_006or018_basic(Dataset):
+class Default_dataset(Dataset): # THU_006or018_basic
     def __init__(self, args,flag): # 1hz, 10hz, 15hz,IF
         self.flag = flag
         self.data_loader(args.data_dir,args.target)

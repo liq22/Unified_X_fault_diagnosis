@@ -48,7 +48,7 @@ def trainer_set(args,path):
 def call_backs(args,path):
     checkpoint_callback = ModelCheckpoint(
         monitor='val_loss',
-        filename='model-{epoch:02d}-{val_loss:.4f}-{val_acc:.4f}-{l1_loss:.4f}',
+        filename='model-{epoch:02d}-{val_loss:.4f}-{val_acc:.4f}',
         save_top_k=8,
         mode='min',
         dirpath = path

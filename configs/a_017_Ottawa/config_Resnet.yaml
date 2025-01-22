@@ -1,15 +1,4 @@
-############### model_structure ####################
 
-signal_processing_configs:
-  layer1: ['SBCT','SBCT','SBCT']  # time to TF
-  layer2: ['GF','GF','GF'] # GF
-
-
-
-feature_extractor_configs: ['Std', 'Var', 'Entropy', 'Kurtosis', 'RMS','Skewness']
-# logical_configs:
-
-###################### data\model##################
 
 
 args:
@@ -25,7 +14,7 @@ args:
   fs: 200000
 
 # model
-  model: TFON
+  model: Resnet
   skip_connection: False # 2D 算子不用skip
   num_classes: 3 # 5 for THU_018_basic 4 for THU_006_basic
   scale : 1
@@ -43,27 +32,20 @@ args:
   search_dim: 3
   tf_in_channel: 1 # 1 for SBCT
 
-# SBCT_params
-  order: 2
-
-# GF_params
-  t_dim: 818 # in_dim - stride // stride 
-  f_dim: 818
-
-# train hyperparameter
+# hyperparameter
   learning_rate: 0.001
   batch_size: 64
-  num_epochs: 300
+  num_epochs: 200
   weight_decay: 0.0001
   num_workers: 32
   seed: 17
+
+# train
   monitor: 'val_loss'
   patience: 20
-  gpus: 4
+  gpus: 1
+  weight_decay: 0.0001
   l1_norm: 0.0001
-  Energy_loss: 0.01
-
-
 
   pruning: None # [0.7,0.5,0.01]
   snr: 0

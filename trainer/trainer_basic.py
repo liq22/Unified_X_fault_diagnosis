@@ -65,13 +65,19 @@ class Basic_plmodel(pl.LightningModule):
             regularization_loss = self.update_regularization_loss()      
                           
             loss += self.args.l1_norm * regularization_loss          
-            self.log('l1_loss_', regularization_loss,prog_bar =True,sync_dist=True)   
+            self.log('l1_loss_', regularization_loss,on_epoch=True,prog_bar =True,sync_dist=True)   
         
         check_attr(self.args,'attention_norm') 
         if self.args.attention_norm:
             attention_loss = self.update_attention_loss()
             loss += self.args.attention_norm * attention_loss
-            self.log('attention_loss', attention_loss,prog_bar =True,sync_dist=True)
+            self.log('attention_loss', attention_loss,on_epoch=True,prog_bar =True,sync_dist=True)
+            
+        check_attr(self.args,'Energy_loss')
+        if self.args.Energy_loss:
+            energy_loss = self.update_energy_loss()
+            loss += self.args.Energy_loss * energy_loss
+            self.log('energy_loss', energy_loss,on_epoch=True,prog_bar =True,sync_dist=True) 
         
         
         return loss
@@ -94,6 +100,20 @@ class Basic_plmodel(pl.LightningModule):
         regularization_loss += sim_reg(tensor = gate_value)
         
         return regularization_loss
+    
+    def update_energy_loss(self):
+        energy_loss = 0
+        tfr = self.network.TFR
+        if self.args.CI_name == 'Kurtosis':
+            power2 = tfr ** 2
+            power4 = tfr ** 4
+            res = power4.mean(dim=-1)/(power2.mean(dim=-1)**2 + 1e-12)
+            return - res.mean()
+        elif self.args.CI_name == 'entropy':
+            res = (tfr**2 * torch.log(tfr**2 + 1e-12)).sum(dim=-1)
+            return res.mean()
+
+        return
 
     
     

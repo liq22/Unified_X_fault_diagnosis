@@ -27,7 +27,7 @@ args:
 # hyperparameter
   learning_rate: 0.001
   batch_size: 64
-  num_epochs: 30
+  num_epochs: 200
   weight_decay: 0.0001
   num_workers: 32
   seed: 17
@@ -40,4 +40,4 @@ args:
   l1_norm: 0.01
 
   pruning: None # [0.7,0.5,0.01]
-  snr: 1
+  snr: 0

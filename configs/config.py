@@ -9,14 +9,14 @@ from types import SimpleNamespace
 import os 
 import time 
 
-from model.Signal_processing import SignalProcessingBase,\
-        SignalProcessingModuleDict,\
-        FFTSignalProcessing,\
-        HilbertTransform,\
-        WaveFilters,\
-        Identity
+# from model.Signal_processing import SignalProcessingBase,\
+#         SignalProcessingModuleDict,\
+#         FFTSignalProcessing,\
+#         HilbertTransform,\
+#         WaveFilters,\
+#         Identity
 from model.Signal_processing import *
-
+from model.Signal_processing_2D import *
 from model.Feature_extract import FeatureExtractionBase,\
         FeatureExtractionModuleDict,\
         MeanFeature,\
@@ -65,6 +65,9 @@ ALL_SP = {
     'Mul':MulOperation,
     'Div':DivOperation,
     
+    # 2D
+    'SBCT':SBCT_NOP,
+    'GF':GlobalFilterOperator,    
     
 }
 ALL_FE = {
@@ -107,7 +110,7 @@ def parse_arguments(config_dir,it):
     
     # dataset = args.data_dir[-3:].replace('/','')
     time_stamp = time.strftime("%d-%H-%M-%S", time.localtime())
-    name = f'model_{args.model}time{time_stamp}_lr{args.learning_rate}_epochs{args.num_epochs}_dataset{args.dataset_task}_it{it}'
+    name = f'model_{args.model}time{time_stamp}_dataset{args.dataset_task}_it{it}'
 
     print(f'Running experiment: {name}')
     

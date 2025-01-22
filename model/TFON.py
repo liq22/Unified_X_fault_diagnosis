@@ -115,9 +115,9 @@ class Classifier(nn.Module):
 
 
 
-class Transparent_Signal_Processing_Network(nn.Module):
+class Time_Frequency_Operator_Network(nn.Module):
     def __init__(self, signal_processing_modules,feature_extractor, args):
-        super(Transparent_Signal_Processing_Network, self).__init__()
+        super(Time_Frequency_Operator_Network, self).__init__()
         self.layer_num = len(signal_processing_modules)
         self.signal_processing_modules = signal_processing_modules
         self.feature_extractor_modules = feature_extractor
@@ -163,6 +163,7 @@ class Transparent_Signal_Processing_Network(nn.Module):
         for layer in self.signal_processing_layers:
             x = layer(x)
         x = self.feature_extractor_layers(x)
+        self.TFR = x
         _,self.channel,self.T,self.F = x.size()
         x = self.norm(x.view(x.size(0),-1))
         x = self.clf(x)
