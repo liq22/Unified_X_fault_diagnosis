@@ -32,7 +32,7 @@ def heatmap_confusion(predictions, test_labels, args,
     matrix_normalized = matrix.astype('float') / matrix.sum(axis=1)[:, np.newaxis]
     
     plt.figure(figsize=(8, 6))
-    sns.heatmap(matrix_normalized, cmap=cmap, annot=True, fmt="d", linewidths=.5,annot_kws={"size": 24})
+    sns.heatmap(matrix_normalized, cmap=cmap, annot=True, fmt=".0%", linewidths=.5,annot_kws={"size": 24})
     # plt.title('Confusion Matrix')
     plt.ylabel('True label')
     plt.xlabel('Predicted label')

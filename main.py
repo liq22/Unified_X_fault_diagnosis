@@ -26,6 +26,7 @@ if __name__ == '__main__':
     # 添加参数
     parser.add_argument('--config_dir', type=str, default='configs/HUST_031/config_basic.yaml',
                         help='The directory of the configuration file')
+    parser.add_argument('--notes', type=str, default='')
 
     meta_args = parser.parse_args()
     config_dir = meta_args.config_dir
@@ -33,7 +34,7 @@ if __name__ == '__main__':
         configs,args,path,name = parse_arguments(config_dir,it)
         
         seed_everything(args.seed + it) # 17 args.seed 
-        wandb.init(project=args.dataset_task, name=name) 
+        wandb.init(project=args.dataset_task, name=name,notes=meta_args.notes) 
 
 
         # 初始化模型
