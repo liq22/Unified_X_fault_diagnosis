@@ -58,7 +58,7 @@ args:
   num_workers: 32
   seed: 17
   monitor: 'val_loss'
-  patience: 20
+  patience: 100
   gpus: 1
   l1_norm: 0.0001
   Energy_loss: 0.01

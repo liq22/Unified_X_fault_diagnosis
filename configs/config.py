@@ -187,33 +187,37 @@ def get_unique_module_name(existing_names, module_name):
             unique_name = f"{module_name}_{index}"
         return unique_name
 # logic
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from collections import OrderedDict
-
-
-import yaml
-from types import SimpleNamespace
-
-config_dir = 'configs/config_basic.yaml' # 从工作目录开始的相对路径
-# 读取YAML文件
-with open(config_dir, 'r') as f:
-    config = yaml.safe_load(f)
-args = SimpleNamespace(**config['args'])
+if __name__ == '__main__':
+    pass
+    # 使用示例
+    # config_dir = 'configs/THU_006/config_TSPN.yaml'
+    # model, test_data, test_labels, predictions = load_and_predict(config_dir,best_model_path='save/THU1+THU2剪枝/THU1_new/model-epoch=61-val_loss=0.0545.ckpt')
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    from collections import OrderedDict
 
 
+    import yaml
+    from types import SimpleNamespace
 
-signal_processing_modules = []
-for layer in config['signal_processing_configs'].values():
-    signal_module = OrderedDict()
-    for module_name in layer:
-        module_class = ALL_SP[module_name]
-        signal_module[module_name] = module_class(args)  # 假设所有模块的构造函数不需要参数
-    signal_processing_modules.append(SignalProcessingModuleDict(signal_module))
+    config_dir = 'configs/config_basic.yaml' # 从工作目录开始的相对路径
+    # 读取YAML文件
+    with open(config_dir, 'r') as f:
+        config = yaml.safe_load(f)
+    args = SimpleNamespace(**config['args'])
 
-feature_extractor_modules = OrderedDict()
-for feature_name in config['feature_extractor_configs']:
-    module_class = ALL_FE[feature_name]
-    feature_extractor_modules[feature_name] = module_class()  # 假设所有模块的构造函数不需要参数
+
+
+    signal_processing_modules = []
+    for layer in config['signal_processing_configs'].values():
+        signal_module = OrderedDict()
+        for module_name in layer:
+            module_class = ALL_SP[module_name]
+            signal_module[module_name] = module_class(args)  # 假设所有模块的构造函数不需要参数
+        signal_processing_modules.append(SignalProcessingModuleDict(signal_module))
+
+    feature_extractor_modules = OrderedDict()
+    for feature_name in config['feature_extractor_configs']:
+        module_class = ALL_FE[feature_name]
+        feature_extractor_modules[feature_name] = module_class()  # 假设所有模块的构造函数不需要参数

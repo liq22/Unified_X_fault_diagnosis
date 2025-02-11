@@ -1,25 +1,23 @@
 args:
 
   device: cuda
-  data_dir: '/home/user/data/a_bearing/a_010_SEU_pro/'  
-  dataset_task: SEU_010_Basic
-  target: 'SEU_bearing_20Hz_2' # SEU_bearing_20Hz_2, SEU_bearing_30Hz_2
+  data_dir: '/home/user/data/a_bearing/a_017_Ottawa19_pro/' # '/home/user/data/a_bearing/a_006_THU_pro/LQ_fusion/' '/home/user/data/a_bearing/a_018_THU24_pro/'
+  dataset_task: a_017_Ottawa # THU_006_basic THU_006_generalization THU_006_fusion THU_018_basic THU_018_generalization THU_018_fusion
+  target: 'B' # if basic or generalization 1hz 10hz 15hz
   k_shot: 64
+  fs: 200000
 
 # model
   model: 'Huan_net' # 'Resnet' 'WKN_m' 'Sinc_net_m' 'Huan_net' 'TFN_Morlet' 'MCN_GFK'
   skip_connection: true
-  num_classes: 5 # 5 for THU_018_basic 4 for THU_006_basic
+  num_classes: 3 # 5 for THU_018_basic 4 for THU_006_basic
   in_dim : 4096
   out_dim : 4096
   in_channels : 2
   out_channels : 3
   scale : 32
 
-  f_c_mu: 0
-  f_c_sigma: 0.1
-  f_b_mu: 0
-  f_b_sigma: 0.1
+
 
 
 # hyperparameter
@@ -27,7 +25,7 @@ args:
   batch_size: 64
   num_epochs: 200
   weight_decay: 0.0001
-  num_workers: 32
+  num_workers: 8
   seed: 17
 
 # train
@@ -35,7 +33,7 @@ args:
   patience: 100
   gpus: 1
   weight_decay: 0.0001
-  l1_norm: 0.01
+  l1_norm: 0.0001
 
   pruning: None # [0.7,0.5,0.01]
   snr: 0

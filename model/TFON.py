@@ -162,8 +162,8 @@ class Time_Frequency_Operator_Network(nn.Module):
     def forward(self, x):
         for layer in self.signal_processing_layers:
             x = layer(x)
-        x = self.feature_extractor_layers(x)
         self.TFR = x
+        x = self.feature_extractor_layers(x)
         _,self.channel,self.T,self.F = x.size()
         x = self.norm(x.view(x.size(0),-1))
         x = self.clf(x)
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     from config import args # for debug model
     from config import signal_processing_modules,feature_extractor_modules
     import torchinfo
-    net = Transparent_Signal_Processing_Network(signal_processing_modules,feature_extractor_modules, args)
+    net = Time_Frequency_Operator_Network(signal_processing_modules,feature_extractor_modules, args)
     # net = Transparent_Signal_Processing_KAN(signal_processing_modules,feature_extractor_modules, args)
     x = torch.randn(2, 4096, 1).cuda()
     y = net(x)

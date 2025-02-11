@@ -26,11 +26,11 @@ class Default_dataset(Dataset): # THU_006or018_basic
         train_indices, val_indices, test_indices = [], [], []
         for label in np.unique(self.labels):
             label_indices = np.where(self.labels == label)[0]
-            # np.random.shuffle(label_indices)
+
             
             n_train = int(len(label_indices) * train_ratio)
             n_val = int(len(label_indices) * val_ratio)
-            # Remaining indices are for testing
+
             n_test = len(label_indices) - n_train - n_val
 
             # Append indices for each set
@@ -50,17 +50,64 @@ class Default_dataset(Dataset): # THU_006or018_basic
 
         self.selected_data = self.data[selected_indices]
         self.selected_labels = self.labels[selected_indices]
-#######################################################################################################        
-        # train_data, test_data, train_labels, test_labels = train_test_split(self.data, self.labels, test_size=0.8, random_state=42)
-        # if self.flag == 'train':
-        #     self.selected_data = train_data
-        #     self.selected_labels = train_labels
-        # elif self.flag == 'test' or 'val':
-        #     self.selected_data = test_data
-        #     self.selected_labels = test_labels
-####################################################
-        # self.selected_data = self.data
-        # self.selected_labels = self.labels
+
+    def __len__(self):
+        return len(self.selected_data)
+
+    def __getitem__(self, idx):
+        sample = self.selected_data[idx]
+        label = self.selected_labels[idx]
+        
+        return sample, label
+
+class Default_generalization(Dataset):
+    def __init__(self, args,flag,
+                 transform=None): # 1hz, 10hz, 15hz,IF
+        # Load data and labels 
+        self.flag = flag
+        self.source = args.source # 100,200,300,400,500
+        self.target = args.target # 100,200,300,400,500
+
+
+        if self.flag == 'train':
+            self.load_data_labels(args, self.source)
+
+        elif self.flag == 'val':
+            self.load_data_labels(args, self.target)
+            self.selected_data, self.selected_labels = select_validation_samples(self.selected_data, self.selected_labels,32)
+
+        elif self.flag == 'test':
+            self.load_data_labels(args, self.target)
+    
+
+    def load_data_labels(self, args,data_list):
+        data_dict= {'data':[], 'label':[]}
+        try:
+            for data in data_list:
+                self.data = np.load(args.data_dir + 'data_' + data + '.npy').astype(np.float32)
+                self.labels = np.load(args.data_dir + 'label_' + data + '.npy').astype(np.float32)
+                self.data = torch.from_numpy(self.data)
+                self.labels = torch.from_numpy(self.labels)
+
+                data_dict['data'].append(self.data)
+                data_dict['label'].append(self.labels)
+
+            # if len(data_dict['data']) != 1:
+                self.selected_data = torch.cat(data_dict['data'], 0)
+                self.selected_labels = torch.cat(data_dict['label'], 0)
+        except:
+            for data in data_list:
+                self.data = np.load(args.data_dir + data + '_data'  + '.npy').astype(np.float32)
+                self.labels = np.load(args.data_dir + data + '_label' + '.npy').astype(np.float32)
+                self.data = torch.from_numpy(self.data)
+                self.labels = torch.from_numpy(self.labels)
+
+                data_dict['data'].append(self.data)
+                data_dict['label'].append(self.labels)
+
+            # if len(data_dict['data']) != 1:
+                self.selected_data = torch.cat(data_dict['data'], 0)
+                self.selected_labels = torch.cat(data_dict['label'], 0)            
 
     def __len__(self):
         return len(self.selected_data)

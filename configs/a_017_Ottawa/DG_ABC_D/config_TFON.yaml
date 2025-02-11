@@ -18,22 +18,23 @@ args:
 
 
 # data_dir: 
-  data_dir: '/home/user/data/a_bearing/a_031_HUST_pro/'
-  dataset_task: HUST_031_Basic
-  target: 'HUST_bearing_20Hz' # HUST_bearing_20Hz, HUST_bearing_VS_0_40_0Hz
+  data_dir: '/home/user/data/a_bearing/a_017_Ottawa19_pro/' # '/home/user/data/a_bearing/a_006_THU_pro/LQ_fusion/' '/home/user/data/a_bearing/a_018_THU24_pro/'
+  dataset_task: a_017_Ottawa_generalization # THU_006_basic THU_006_generalization THU_006_fusion THU_018_basic THU_018_generalization THU_018_fusion
+  source: ['A','B','C']
+  target: ['D'] # if basic or generalization 1hz 10hz 15hz
   k_shot: 64
-  fs: 25600
+  fs: 200000
 
 # model
   model: TFON
   skip_connection: False # 2D 算子不用skip
-  num_classes: 9 # 5 for THU_018_basic 4 for THU_006_basic
+  num_classes: 3 # 5 for THU_018_basic 4 for THU_006_basic
   scale : 1
 
 # common_configs
   in_dim: 4096
   out_dim: None
-  in_channels: 3
+  in_channels: 2
   out_channels: 3 # scale * len(OP)
   window: 'gaussian' # 'gaussian' 'hann' 'hamming' 'blackman' 'bartlett' 'boxcar'
   window_length: 128

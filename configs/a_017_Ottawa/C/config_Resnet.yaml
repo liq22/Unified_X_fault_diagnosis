@@ -1,0 +1,51 @@
+
+
+
+args:
+  # debug: True
+  device: cuda
+
+
+# data_dir: 
+  data_dir: '/home/user/data/a_bearing/a_017_Ottawa19_pro/' # '/home/user/data/a_bearing/a_006_THU_pro/LQ_fusion/' '/home/user/data/a_bearing/a_018_THU24_pro/'
+  dataset_task: a_017_Ottawa # THU_006_basic THU_006_generalization THU_006_fusion THU_018_basic THU_018_generalization THU_018_fusion
+  target: 'C' # if basic or generalization 1hz 10hz 15hz
+  k_shot: 64
+  fs: 200000
+
+# model
+  model: Resnet
+  skip_connection: False # 2D 算子不用skip
+  num_classes: 3 # 5 for THU_018_basic 4 for THU_006_basic
+  scale : 1
+
+# common_configs
+  in_dim: 4096
+  out_dim: None
+  in_channels: 2
+  out_channels: 3 # scale * len(OP)
+  window: 'gaussian' # 'gaussian' 'hann' 'hamming' 'blackman' 'bartlett' 'boxcar'
+  window_length: 128
+  stride: 5
+  CI_name: 'Kurtosis' # 
+
+  search_dim: 3
+  tf_in_channel: 1 # 1 for SBCT
+
+# hyperparameter
+  learning_rate: 0.001
+  batch_size: 64
+  num_epochs: 200
+  weight_decay: 0.0001
+  num_workers: 32
+  seed: 17
+
+# train
+  monitor: 'val_loss'
+  patience: 100
+  gpus: 1
+  weight_decay: 0.0001
+  l1_norm: 0.0001
+
+  pruning: None # [0.7,0.5,0.01]
+  snr: 0

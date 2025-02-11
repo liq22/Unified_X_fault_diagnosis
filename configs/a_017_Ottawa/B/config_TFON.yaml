@@ -20,7 +20,7 @@ args:
 # data_dir: 
   data_dir: '/home/user/data/a_bearing/a_017_Ottawa19_pro/' # '/home/user/data/a_bearing/a_006_THU_pro/LQ_fusion/' '/home/user/data/a_bearing/a_018_THU24_pro/'
   dataset_task: a_017_Ottawa # THU_006_basic THU_006_generalization THU_006_fusion THU_018_basic THU_018_generalization THU_018_fusion
-  target: 'A' # if basic or generalization 1hz 10hz 15hz
+  target: 'B' # if basic or generalization 1hz 10hz 15hz
   k_shot: 64
   fs: 200000
 
@@ -58,7 +58,7 @@ args:
   num_workers: 32
   seed: 17
   monitor: 'val_loss'
-  patience: 20
+  patience: 100
   gpus: 4
   l1_norm: 0.0001
   Energy_loss: 0.01
