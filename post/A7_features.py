@@ -45,7 +45,7 @@ def plot_scatter(features, labels, name='default',plot_dir = './plot'):
     print('plot model:',name)
 
     # 在函数内部计算num_classes
-    num_classes = labels.max() + 1
+    num_classes = int(labels.max() + 1)
 
     for i in range(num_classes):
         idxs = labels == i

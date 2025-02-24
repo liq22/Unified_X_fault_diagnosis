@@ -74,15 +74,15 @@ def load_models(config_dir,best_model_path=None):
 def predict_from_loader(model, test_dataloader):
     test_dataset = test_dataloader.dataset.selected_data
     y_true = test_dataloader.dataset.selected_labels
-    y_true = torch.tensor(y_true).cuda()
-    data = torch.tensor(test_dataset).cuda()
+    y_true = torch.tensor(y_true)#.cuda()
+    data = torch.tensor(test_dataset)#.cuda()
     
     # 进行预测
     model.eval()
     with torch.no_grad():
         y_pred = model.network(data)
     
-    return y_true, y_pred.cuda()
+    return y_true, y_pred#.cuda()
     # test_dataset = test_dataloader.dataset.selected_data
     # y_true = test_dataloader.dataset.selected_labels
     # y_true = torch.tensor(y_true).cuda()

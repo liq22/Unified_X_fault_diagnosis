@@ -59,7 +59,7 @@ args:
   seed: 17
   monitor: 'val_loss'
   patience: 100
-  gpus: 4
+  gpus: 1
   l1_norm: 0.0001
   Energy_loss: 0.01
 

@@ -163,8 +163,9 @@ class Time_Frequency_Operator_Network(nn.Module):
         for layer in self.signal_processing_layers:
             x = layer(x)
         self.TFR = x
+        # _,self.channel,self.T,self.F = x.size()
         x = self.feature_extractor_layers(x)
-        _,self.channel,self.T,self.F = x.size()
+        
         x = self.norm(x.view(x.size(0),-1))
         x = self.clf(x)
         return x
