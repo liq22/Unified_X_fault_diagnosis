@@ -140,7 +140,7 @@ DATASET_TASK_CLASS = {
 │   ├── NNSPN.py                 # EOAN 工作，加入 Attention
 │   └── utils.py
 ├── model_collection             # 模型集合
-│   ├── EELM.py                  # 王冬工作
+│   ├── EELM.py                  # 工作
 │   ├── F_EQL.py                 # EQL 工作
 │   ├── MCN.py                   # MCN 工作 
 │   ├── MWA_CNN.py
