@@ -19,7 +19,7 @@
 请按照以下命令创建并激活 Conda 环境：
 
 ```shell
-conda env create -f environment.yml
+conda env create -f environment.yml # environment.yml 修改环境名
 conda activate your_environment_name  # 将 'your_environment_name' 替换为实际的环境名称
 ```
 
