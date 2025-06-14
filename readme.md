@@ -12,6 +12,10 @@
 - EELM
 - F_EQL
 
+# news
+
+项目正在集成到[PHMbench](https://github.com/PHMBench) 中... 此仓库暂时不进行维护
+
 # 快速开始
 
 ## 环境配置
