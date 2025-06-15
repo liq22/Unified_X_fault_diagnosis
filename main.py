@@ -16,15 +16,17 @@ from configs.config import parse_arguments,config_network
 import os
 import pandas as pd
 import multiprocessing
-import wandb
+import swanlab as wandb
 if __name__ == '__main__':
     # multiprocessing.freeze_support()
-    iteration = 5
+    iteration = 1
     # 创建解析器
     parser = argparse.ArgumentParser(description='TSPN')
 
     # 添加参数
-    parser.add_argument('--config_dir', type=str, default='configs/HUST_031/config_basic.yaml',
+    # parser.add_argument('--config_dir', type=str, default='configs/a_temp_SUDA_electric/config_basic.yaml',
+    #                     help='The directory of the configuration file')
+    parser.add_argument('--config_dir', type=str, default='configs/a_031_HUST/config_basic.yaml',
                         help='The directory of the configuration file')
     parser.add_argument('--notes', type=str, default='')
 
@@ -32,7 +34,8 @@ if __name__ == '__main__':
     config_dir = meta_args.config_dir
     for it in range(iteration):
         configs,args,path,name = parse_arguments(config_dir,it)
-        
+        # for target in args.target_list:
+        # args.target = target
         seed_everything(args.seed + it) # 17 args.seed 
         wandb.init(project=args.dataset_task, name=name,notes=meta_args.notes) 
 
@@ -67,6 +70,7 @@ if __name__ == '__main__':
         result_df = pd.DataFrame(result)
         result_df.to_csv(os.path.join(path, 'test_result.csv'), index=False)
         wandb.finish()
+        
 
 
 

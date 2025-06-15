@@ -1,29 +1,25 @@
 signal_processing_configs:
-  # layer1: ['HT','LNO','I']
-  # layer2: ['HT','LNO','I']
-  # layer3: ['HT','LNO','I']
-  # layer4: ['HT','LNO','I']
-  layer1: ['Mul','WF','Order1MAFilter','Order2MAFilter','Order2MAFilter','Order2DFFilter','HT','I']
-  layer2: ['Mul','WF','Order1MAFilter','Order2MAFilter','Order2MAFilter','Order2DFFilter','HT','I']
-  layer3: ['Mul','WF','Order1MAFilter','Order2MAFilter','Order2MAFilter','Order2DFFilter','HT','I']
-
+  layer1: ['I','I','I']
+  layer2: ['I','I','I']
+  layer3: ['I','I','I']
+  layer4: ['I','I','I']
 
 feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMean', 'Kurtosis', 'RMS', 'CrestFactor','Skewness', 'ClearanceFactor', 'ShapeFactor']
 
 args:
 
   device: cuda
-  # data_dir: '/home/user/data/a_bearing/a_031_HUST_pro/' 
-  data_dir: 'C:/Users/CCSLab/Desktop/HUST_bearing/' 
-  dataset_task: HUST_031_Basic
-  target: 'HUST_bearing_20Hz' # HUST_bearing_20Hz, HUST_bearing_VS_0_40_0Hz
+  data_dir: 'C:/Users/CCSLab/Desktop/PU_bearing/' 
+  dataset_task: a_027_PU
+  target: 'PU_N09_M07_F10' 
+  target_list: ['PU_N09_M07_F10', 'PU_N15_M01_F10', 'PU_N15_M07_F04', 'PU_N15_M07_F10']
   k_shot: 64
 
 
 # model
   model: TSPN
   skip_connection: true
-  num_classes: 9
+  num_classes: 3
   in_dim : 4096
   out_dim : 4096
   in_channels : 3
@@ -42,6 +38,7 @@ args:
   weight_decay: 0.0001
   num_workers: 8
   seed: 17
+  persistent_workers: True
 
 # train
   monitor: 'val_loss'

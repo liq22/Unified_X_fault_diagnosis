@@ -34,40 +34,41 @@ if __name__ == '__main__':
     iteration = 5
     parser = argparse.ArgumentParser(description='comparison model')
     # 添加参数
-    parser.add_argument('--config_dir', type=str, default='configs/SEU_010/config_MCN_basic.yaml',
+    parser.add_argument('--config_dir', type=str, default='configs/a_temp_SUDA_electric/config_MWA_CNN_basic.yaml',
                         help='The directory of the configuration file')
     meta_args = parser.parse_args()
     config_dir = meta_args.config_dir
     for it in range(iteration):
         configs,args,path,name = parse_arguments(config_dir,it)
-        
-        seed_everything(args.seed + it) # 17 args.seed 
-        wandb.init(project=args.dataset_task, name=name) 
+        for target in args.target_list:
+            args.target = target
+            seed_everything(args.seed + it) # 17 args.seed 
+            wandb.init(project=args.dataset_task, name=name) 
 
-        ff = np.arange(0, args.in_dim//2 + 1) / args.in_dim//2 + 1
+            ff = np.arange(0, args.in_dim//2 + 1) / args.in_dim//2 + 1
 
-        MODEL_DICT = {
-            'Resnet': lambda args: ResNet(BasicBlock, [2, 2, 2, 2], in_channel=args.in_channels, num_class=args.num_classes),
-            'WKN_m': lambda args: WKN_m(BasicBlock, [2, 2, 2, 2], in_channel=args.in_channels, num_class=args.num_classes),
-            'Sinc_net_m': lambda args: Sinc_net_m(BasicBlock, [2, 2, 2, 2], in_channel=args.in_channels, num_class=args.num_classes),
-            'Huan_net': lambda args: Huan_net(input_size=args.in_channels, num_class=args.num_classes),
-            'TFN_Morlet': lambda args: TFN_Morlet(in_channels=args.in_channels, out_channels=args.num_classes),
-            'MCN_GFK': lambda args: MultiChannel_MCN_GFK(ff=ff, in_channels=args.in_channels, num_MFKs=8, num_classes=args.num_classes),
-        }
+            MODEL_DICT = {
+                'Resnet': lambda args: ResNet(BasicBlock, [2, 2, 2, 2], in_channel=args.in_channels, num_class=args.num_classes),
+                'WKN_m': lambda args: WKN_m(BasicBlock, [2, 2, 2, 2], in_channel=args.in_channels, num_class=args.num_classes),
+                'Sinc_net_m': lambda args: Sinc_net_m(BasicBlock, [2, 2, 2, 2], in_channel=args.in_channels, num_class=args.num_classes),
+                'Huan_net': lambda args: Huan_net(input_size=args.in_channels, num_class=args.num_classes),
+                'TFN_Morlet': lambda args: TFN_Morlet(in_channels=args.in_channels, out_channels=args.num_classes),
+                'MCN_GFK': lambda args: MultiChannel_MCN_GFK(ff=ff, in_channels=args.in_channels, num_MFKs=8, num_classes=args.num_classes),
+            }
 
-        # 初始化模型
-        model_plain = MODEL_DICT[args.model](args)
-        model_structure = print(model_plain)
-        ############## model train ########## 
+            # 初始化模型
+            model_plain = MODEL_DICT[args.model](args)
+            model_structure = print(model_plain)
+            ############## model train ########## 
 
-        model = Basic_plmodel(model_plain, args)
-        trainer,train_dataloader, val_dataloader, test_dataloader = trainer_set(args,path)
-        # train
-        trainer.fit(model,train_dataloader, val_dataloader)
-        model = load_best_model_checkpoint(model,trainer)
-        result = trainer.test(model,test_dataloader)
+            model = Basic_plmodel(model_plain, args)
+            trainer,train_dataloader, val_dataloader, test_dataloader = trainer_set(args,path)
+            # train
+            trainer.fit(model,train_dataloader, val_dataloader)
+            model = load_best_model_checkpoint(model,trainer)
+            result = trainer.test(model,test_dataloader)
 
-        # 保存结果
-        result_df = pd.DataFrame(result)
-        result_df.to_csv(os.path.join(path, 'test_result.csv'), index=False)
-        wandb.finish()
+            # 保存结果
+            result_df = pd.DataFrame(result)
+            result_df.to_csv(os.path.join(path, 'test_result.csv'), index=False)
+            wandb.finish()

@@ -1,0 +1,43 @@
+args:
+
+  device: cuda
+  data_dir: 'C:/Users/CCSLab/Desktop/SUDA_electric/' 
+  dataset_task: a_temp_SUDA_generalization
+  source: ['SUDA_electric_0kg_2500r_1000Hz', 'SUDA_electric_0kg_4000r_1000Hz', 'SUDA_electric_6kg_2500r_1000Hz', 'SUDA_electric_6kg_4000r_1000Hz']
+  target: ['SUDA_electric_3kg_3500r_1000Hz']
+  target_list: [['SUDA_electric_0kg_3000r_1000Hz'], ['SUDA_electric_0kg_3500r_1000Hz'], ['SUDA_electric_3kg_2500r_1000Hz'], ['SUDA_electric_3kg_3000r_1000Hz'], ['SUDA_electric_3kg_3500r_1000Hz'], ['SUDA_electric_3kg_4000r_1000Hz'], ['SUDA_electric_6kg_3000r_1000Hz'], ['SUDA_electric_6kg_3500r_1000Hz']]
+  k_shot: 64
+
+# model
+  model: 'TFN_Morlet' # 'Resnet' 'WKN_m' 'Sinc_net_m' 'Huan_net' 'TFN_Morlet' 'MCN_GFK'
+  skip_connection: true
+  num_classes: 4 # 5 for THU_018_basic 4 for THU_006_basic
+  in_dim : 1024
+  out_dim : 1024
+  in_channels : 5
+  out_channels : 3
+  scale : 5
+
+  f_c_mu: 0
+  f_c_sigma: 0.1
+  f_b_mu: 0
+  f_b_sigma: 0.1
+
+
+# hyperparameter
+  learning_rate: 0.001
+  batch_size: 64
+  num_epochs: 200
+  weight_decay: 0.0001
+  num_workers: 8
+  seed: 17
+
+# train
+  monitor: 'val_loss'
+  patience: 100
+  gpus: 1
+  weight_decay: 0.0001
+  l1_norm: 0.001
+
+  pruning: None # [0.7,0.5,0.01]
+  snr: 0

@@ -10,8 +10,8 @@ from .utils import ModelParametersLoggingCallback
 import pytorch_lightning as pl
 from lightning.pytorch import Trainer
 from lightning.pytorch.loggers import TensorBoardLogger
-from lightning.pytorch.loggers import WandbLogger
-
+# from lightning.pytorch.loggers import WandbLogger
+from swanlab.integration.pytorch_lightning import SwanLabLogger as WandbLogger
 
 from torch.utils.tensorboard.writer import SummaryWriter   
 ############### data ###############
