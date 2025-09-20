@@ -1,20 +1,31 @@
+signal_processing_configs:
+  layer1: ['I','I','I']
+  layer2: ['I','I','I']
+  layer3: ['I','I','I']
+  layer4: ['I','I','I']
+
+
+feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMean', 'Kurtosis', 'RMS', 'CrestFactor','Skewness', 'ClearanceFactor', 'ShapeFactor']
+
 args:
 
   device: cuda
   data_dir: 'E:/dateset/generate/SUDA_electric/' 
   dataset_task: a_temp_SUDA_basic
   target: 'SUDA_electric_0kg_2500r_1000Hz' # HUST_bearing_20Hz, HUST_bearing_VS_0_40_0Hz
-  target_list: ['SUDA_electric_0kg_4000r_1000Hz', 'SUDA_electric_3kg_4000r_1000Hz', 'SUDA_electric_6kg_4000r_1000Hz']
+  target_list: ['SUDA_electric_0kg_2500r_1000Hz', 'SUDA_electric_0kg_4000r_1000Hz', 'SUDA_electric_6kg_2500r_1000Hz', 'SUDA_electric_6kg_4000r_1000Hz']
+  
   k_shot: 64
 
+
 # model
-  model: 'Sinc_net_m' # 'Resnet' 'WKN_m' 'Sinc_net_m' 'Huan_net' 'TFN_Morlet' 'MCN_GFK'
+  model: TSPN
   skip_connection: true
-  num_classes: 4 # 5 for THU_018_basic 4 for THU_006_basic
+  num_classes: 4
   in_dim : 1024
   out_dim : 1024
   in_channels : 5
-  out_channels : 3
+  out_channels : 3 
   scale : 5
 
   f_c_mu: 0
@@ -24,18 +35,19 @@ args:
 
 # hyperparameter
   learning_rate: 0.001
-  batch_size: 16
+  batch_size: 64
   num_epochs: 200
   weight_decay: 0.0001
   num_workers: 4
   seed: 17
+  persistent_workers: True
 
 # train
   monitor: 'val_loss'
   patience: 100
   gpus: 1
   weight_decay: 0.0001
-  l1_norm: 0.01
+  l1_norm: 0.0001
 
   pruning: None # [0.7,0.5,0.01]
   snr: 0

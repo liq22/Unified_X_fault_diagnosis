@@ -1,9 +1,10 @@
 args:
 
   device: cuda
-  data_dir: '/home/user/data/a_bearing/a_010_SEU_pro/'  
+  data_dir: 'E:/dateset/generate/SEU_bearing/'  
   dataset_task: SEU_010_Basic
   target: 'SEU_bearing_20Hz_2' # SEU_bearing_20Hz_2, SEU_bearing_30Hz_2
+  target_list: ['SEU_bearing_20Hz_2', 'SEU_bearing_30Hz_2']
   k_shot: 64
 
 # model
@@ -26,7 +27,7 @@ args:
   batch_size: 64
   num_epochs: 200
   weight_decay: 0.0001
-  num_workers: 32
+  num_workers: 4
   seed: 17
 
 # train

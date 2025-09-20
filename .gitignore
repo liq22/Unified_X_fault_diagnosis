@@ -219,5 +219,5 @@ wandb/run-20240626_205217-20h2ghze/run-20h2ghze.wandb
 script/NNSPN_paper/sweep_config/
 post/Attention_paper/
 *.npz
-*.ipynb
+
 /pre_exp

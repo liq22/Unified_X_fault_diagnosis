@@ -1,21 +1,24 @@
 args:
 
   device: cuda
-  data_dir: 'E:/dateset/generate/SEU_bearing/'  
-  dataset_task: SEU_010_Basic
-  target: 'SEU_bearing_20Hz_2' # SEU_bearing_20Hz_2, SEU_bearing_30Hz_2
-  target_list: ['SEU_bearing_20Hz_2', 'SEU_bearing_30Hz_2']
+###################### data ##################
+
+  # data_dir: 
+  data_dir: 'E:/dateset/generate/PU_bearing/' 
+  dataset_task: a_027_PU
+  target: 'PU_N09_M07_F10' 
+  target_list: ['PU_N09_M07_F10', 'PU_N15_M01_F10', 'PU_N15_M07_F04', 'PU_N15_M07_F10']
   k_shot: 64
 
 # model
-  model: 'Resnet' # 'Resnet' 'WKN_m' 'Sinc_net_m' 'Huan_net' 'TFN_Morlet' 'MCN_GFK'
+  model: 'WKN_m' # 'Resnet' 'WKN_m' 'Sinc_net_m' 'Huan_net' 'TFN_Morlet' 'MCN_GFK'
   skip_connection: true
-  num_classes: 5 # 5 for THU_018_basic 4 for THU_006_basic
+  num_classes: 3 # 5 for THU_018_basic 4 for THU_006_basic
   in_dim : 4096
   out_dim : 4096
-  in_channels : 2
+  in_channels : 3
   out_channels : 3
-  scale : 4
+  scale : 32
 
   f_c_mu: 0
   f_c_sigma: 0.1

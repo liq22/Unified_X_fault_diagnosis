@@ -1,3 +1,11 @@
+signal_processing_configs:
+  layer1: ['HT','WF','I']
+  layer2: ['HT','WF','I']
+  layer3: ['HT','WF','I']
+  layer4: ['HT','WF','I']
+
+feature_extractor_configs: ['Entropy']
+
 args:
 
   device: cuda
@@ -7,10 +15,11 @@ args:
   target_list: ['SEU_bearing_20Hz_2', 'SEU_bearing_30Hz_2']
   k_shot: 64
 
+
 # model
-  model: 'Resnet' # 'Resnet' 'WKN_m' 'Sinc_net_m' 'Huan_net' 'TFN_Morlet' 'MCN_GFK'
+  model: TSPN
   skip_connection: true
-  num_classes: 5 # 5 for THU_018_basic 4 for THU_006_basic
+  num_classes: 5
   in_dim : 4096
   out_dim : 4096
   in_channels : 2
@@ -35,7 +44,7 @@ args:
   patience: 100
   gpus: 1
   weight_decay: 0.0001
-  l1_norm: 0.01
+  l1_norm: 0.0001
 
   pruning: None # [0.7,0.5,0.01]
   snr: 0

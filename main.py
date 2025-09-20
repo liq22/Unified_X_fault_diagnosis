@@ -16,7 +16,10 @@ from configs.config import parse_arguments,config_network
 import os
 import pandas as pd
 import multiprocessing
-import swanlab as wandb
+# import swanlab as wandb
+
+# os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+torch.set_float32_matmul_precision('medium')
 if __name__ == '__main__':
     # multiprocessing.freeze_support()
     iteration = 1
@@ -26,7 +29,7 @@ if __name__ == '__main__':
     # 添加参数
     # parser.add_argument('--config_dir', type=str, default='configs/a_temp_SUDA_electric/config_basic.yaml',
     #                     help='The directory of the configuration file')
-    parser.add_argument('--config_dir', type=str, default='configs/a_031_HUST/config_basic.yaml',
+    parser.add_argument('--config_dir', type=str, default='configs/a_010_SEU/config_basic.yaml',
                         help='The directory of the configuration file')
     parser.add_argument('--notes', type=str, default='')
 
@@ -35,9 +38,9 @@ if __name__ == '__main__':
     for it in range(iteration):
         configs,args,path,name = parse_arguments(config_dir,it)
         # for target in args.target_list:
-        # args.target = target
+            # args.target = target
         seed_everything(args.seed + it) # 17 args.seed 
-        wandb.init(project=args.dataset_task, name=name,notes=meta_args.notes) 
+        # wandb.init(project=args.dataset_task, name=name,notes=meta_args.notes) 
 
 
         # 初始化模型
@@ -69,7 +72,7 @@ if __name__ == '__main__':
         # 保存结果
         result_df = pd.DataFrame(result)
         result_df.to_csv(os.path.join(path, 'test_result.csv'), index=False)
-        wandb.finish()
+        # wandb.finish()
         
 
 

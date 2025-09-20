@@ -1,25 +1,18 @@
-signal_processing_configs:
-  layer1: ['HT','WF','I']
-  layer2: ['HT','WF','I']
-  layer3: ['HT','WF','I']
-  layer4: ['HT','WF','I']
-
-feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMean', 'Kurtosis', 'RMS', 'CrestFactor','Skewness', 'ClearanceFactor', 'ShapeFactor']
-
 args:
 
   device: cuda
-  data_dir: 'E:/dateset/generate/SUDA_electric/' 
+  data_dir: 'E:/dateset/generate/SUDA_electric/'
   dataset_task: a_temp_SUDA_generalization
   source: ['SUDA_electric_0kg_2500r_1000Hz', 'SUDA_electric_0kg_4000r_1000Hz', 'SUDA_electric_6kg_2500r_1000Hz', 'SUDA_electric_6kg_4000r_1000Hz']
   target: ['SUDA_electric_3kg_3500r_1000Hz']
+  target_list: [['SUDA_electric_0kg_3000r_1000Hz'], ['SUDA_electric_0kg_3500r_1000Hz'], ['SUDA_electric_3kg_2500r_1000Hz'], ['SUDA_electric_3kg_3000r_1000Hz'], ['SUDA_electric_3kg_3500r_1000Hz'], ['SUDA_electric_3kg_4000r_1000Hz'], ['SUDA_electric_6kg_3000r_1000Hz'], ['SUDA_electric_6kg_3500r_1000Hz']]
   k_shot: 64
-
+  fs: 25600
 
 # model
-  model: TSPN
+  model: 'MCN_GFK' # 'Resnet' 'WKN_m' 'Sinc_net_m' 'Huan_net' 'TFN_Morlet' 'MCN_GFK'
   skip_connection: true
-  num_classes: 4
+  num_classes: 4 # 5 for THU_018_basic 4 for THU_006_basic
   in_dim : 1024
   out_dim : 1024
   in_channels : 5
@@ -31,14 +24,14 @@ args:
   f_b_mu: 0
   f_b_sigma: 0.1
 
+
 # hyperparameter
-  learning_rate: 0.001
+  learning_rate: 0.01
   batch_size: 64
   num_epochs: 200
   weight_decay: 0.0001
-  num_workers: 6
-  seed: 18
-  persistent_workers: True
+  num_workers: 4
+  seed: 17
 
 # train
   monitor: 'val_loss'
