@@ -9,7 +9,7 @@ feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMe
 args:
 
   device: cuda
-  data_dir: 'E:/dateset/generate/SUDA_electric/' 
+  data_dir: 'E:/dataset/generate/SUDA_electric/' 
   dataset_task: a_temp_SUDA_generalization
   source: ['SUDA_electric_0kg_2500r_1000Hz', 'SUDA_electric_0kg_4000r_1000Hz', 'SUDA_electric_6kg_2500r_1000Hz', 'SUDA_electric_6kg_4000r_1000Hz']
   target: ['SUDA_electric_3kg_3500r_1000Hz']

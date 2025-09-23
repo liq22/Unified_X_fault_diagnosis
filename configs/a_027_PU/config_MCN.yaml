@@ -1,7 +1,7 @@
 args:
 
   device: cuda
-  data_dir: 'E:/dateset/generate/PU_bearing/' 
+  data_dir: 'E:/dataset/generate/PU_bearing/' 
   dataset_task: a_027_PU
   target: 'PU_N09_M07_F10' 
   target_list: ['PU_N09_M07_F10', 'PU_N15_M01_F10', 'PU_N15_M07_F04', 'PU_N15_M07_F10']
