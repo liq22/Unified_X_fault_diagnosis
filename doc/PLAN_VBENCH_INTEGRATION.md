@@ -350,9 +350,9 @@ python main.py --config_file configs/vbench/config_vbench_generalization.yaml
 
 ### 8.1 统一数据读取管线（单一Dataset）
 - **前提条件**：数据结构统一（metadata.xlsx + data.h5；corpus.xlsx 可选）。
-- **标准样本结构**：`{"x": Float32[C,L], "y": target, "meta": {...}, "gate_feat": Float32[G]}`。
+- **标准样本结构**：`{"x": Float32[C,L], "y": target, "meta": {...}`。
 - **实现要点**：
-  - 仅实现一个 `VbenchDataset`，内部使用 `pandas` 读取 `metadata.xlsx`，使用 `h5py` 读取 `data.h5`（惰性加载/分块加载），如果存在则加载 `corpus.xlsx`。
+  - 仅实现一个 `VbenchDataset`，内部使用 `pandas` 读取 `metadata.xlsx`，使用 `h5py` 读取 `data.h5`（惰性加载/分块加载）
   - `__getitem__(idx)`：通过 `Id` 定位到 HDF5 键，返回 `[C,L]`（注意转置），附带元信息与门控特征。
   - 支持滑动窗口（length/stride）、多通道选择/融合、任务标签派生（Label/RUL/Anomaly）。
 
@@ -375,9 +375,7 @@ class VbenchDataset(Dataset):
         self.meta = pd.read_excel(root/"metadata.xlsx")
         # 打开HDF5文件（惰性加载）
         self.h5 = h5py.File(root/"data.h5", "r")
-        self.corpus = None
-        if use_corpus and (root/"corpus.xlsx").exists():
-            self.corpus = pd.read_excel(root/"corpus.xlsx")
+
         # 预构建索引、窗口映射...
 
     def __getitem__(self, i):
@@ -574,33 +572,11 @@ for i, batch in enumerate(dataloader):
         optimizer.zero_grad()
 ```
 
-### 9.5 分布式训练支持
 
-#### 数据并行
-```python
-# PyTorch Lightning配置
-trainer = pl.Trainer(
-    strategy="ddp",
-    accelerator="gpu",
-    devices=4,
-    sync_batchnorm=True
-)
-```
-
-#### 模型并行（大模型）
-- 张量并行：权重分片
-- 流水线并行：层间分片
-- 专家并行（MoE）：不同专家分布在不同GPU
-
----
 
 ## 10. 常见问题与解决方案（FAQ）
 
-### Q1: 如何处理不同采样率的数据？
-**A**: VbenchDataset自动处理：
-- 读取metadata.xlsx中的Sample_rate
-- 统一重采样到目标频率（如10kHz）
-- 保留原始采样信息在meta中
+
 
 ### Q2: 内存不足怎么办？
 **A**: 多种优化策略：
@@ -615,18 +591,7 @@ trainer = pl.Trainer(
 2. 在metadata.xlsx中添加相应条目
 3. 更新配置文件的dataset_ids列表
 
-### Q4: 留一法交叉验证如何实施？
-**A**: 自动化流程：
-```python
-# 配置中设置
-domain_config:
-    leave_one_domain_out: true
-    target_domain: "domain_3"  # 指定测试域
 
-# 或自动遍历所有域
-for domain in all_domains:
-    evaluate(domain)
-```
 
 ### Q5: 如何进行数据增强？
 **A**: 配置灵活的增强策略：
