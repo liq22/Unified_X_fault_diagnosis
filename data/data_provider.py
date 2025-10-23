@@ -1,5 +1,6 @@
 from torch.utils.data import DataLoader
 from data.datasets import *
+from data.vbench_dataset import VbenchDataset
 from .utils import AddNoiseTransform
 
 DATASET_TASK_CLASS = {
@@ -15,6 +16,14 @@ DATASET_TASK_CLASS = {
     'a_017_Ottawa': Default_dataset,
     'a_017_Ottawa_generalization': Default_generalization,
     'a_031_HUST_generalization': Default_generalization,
+    # Vbench数据集支持
+    'VBENCH_basic': VbenchDataset,
+    'VBENCH_CWRU': VbenchDataset,
+    'VBENCH_XJTU': VbenchDataset,
+    'VBENCH_FEMTO': VbenchDataset,
+    'VBENCH_THU': VbenchDataset,
+    'VBENCH_HUST': VbenchDataset,
+    'VBENCH_all': VbenchDataset,
 }
 
 def get_data(args):

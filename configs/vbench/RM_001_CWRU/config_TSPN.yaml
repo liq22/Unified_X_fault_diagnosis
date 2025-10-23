@@ -1,0 +1,55 @@
+# CWRU轴承数据集 TSPN模型配置
+# 使用CWRU数据进行故障诊断实验
+
+# 继承基础诊断配置
+# 实际使用时需要手动导入基础配置或使用配置管理库
+
+############### 数据集特定配置 ####################
+vbench_config:
+  # 仅使用CWRU数据集
+  dataset_ids: ["RM_001_CWRU"]
+
+  # CWRU特定的采样配置
+  sampling_config:
+    target_per_class: 500     # CWRU每类500样本（减少规模）
+    ids_cap: 30              # CWRU ID池大小30
+
+  # CWRU特定的窗口配置
+  window_config:
+    window_length: 4096
+    stride: 2048           # CWRU数据可以使用较大步长
+
+  # 域配置（CWRU通常有多个工况）
+  domain_config:
+    leave_one_domain_out: true
+    # target_domain: "0HP"  # 可指定特定负载
+
+############### 模型参数 ####################
+args:
+  # CWRU数据集通常有10个故障类别
+  # 0: 正常，1-9: 不同故障类型
+  num_classes: 10
+
+  # TSPN模型参数
+  model: TSPN
+  skip_connection: true
+  in_dim: 4096
+  out_dim: 4096
+  in_channels: 2            # CWRU使用驱动端和风扇端传感器
+  out_channels: 3
+  scale: 4
+
+  # CWRU特定训练参数
+  learning_rate: 0.001
+  batch_size: 32           # CWRU可以使用较小的batch_size
+  num_epochs: 200
+
+  # 训练监控
+  monitor: 'val_acc'
+  patience: 50
+
+  # 信号处理滤波器参数
+  f_c_mu: 0
+  f_c_sigma: 0.05           # CWRU数据需要较窄的滤波器
+  f_b_mu: 0.1
+  f_b_sigma: 0.05

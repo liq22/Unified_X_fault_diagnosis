@@ -1,0 +1,57 @@
+# 故障诊断任务专用配置
+# 继承基础配置，覆盖任务特定部分
+
+# 使用YAML继承（需要安装hydra或omegaconf）
+# 或者直接复制相关配置覆盖
+
+############### Vbench诊断配置 ####################
+vbench_config:
+  # 任务类型固定为故障诊断
+  task_type: "fault_diagnosis"
+  target_column: "Label"
+
+  # 诊断特定采样配置
+  sampling_config:
+    # 确保类别平衡
+    method: "smart"
+    target_per_class: 1000    # 每类1000个样本
+    ids_cap: 50              # ID池大小
+
+  # 数据集筛选（可根据需要取消注释）
+  dataset_ids: ["RM_001_CWRU"]  # CWRU轴承数据集
+  # dataset_ids: ["RM_002_XJTU"]  # 西交大轴承数据集
+  # dataset_ids: ["RM_003_FEMTO"]  # FEMTO-STT轴承数据集
+  # dataset_ids: ["RM_006_THU"]    # 清华轴承数据集
+
+  # 域自适应配置
+  domain_config:
+    leave_one_domain_out: true  # 启用留一法跨域评估
+    # target_domain: "domain_3"  # 可指定特定域
+
+  # 数据分割配置
+  split_config:
+    train_ratio: 0.7
+    val_ratio: 0.1
+    test_ratio: 0.2
+    stratify_by: "Label"  # 按标签分层采样
+
+############### 模型配置 ####################
+args:
+  # 自动检测类别数
+  num_classes: null  # 将在数据加载时自动设置
+
+  # TSPN模型参数（适用于故障诊断）
+  model: TSPN
+  skip_connection: true
+  in_channels: 2
+  out_channels: 3
+  scale: 4
+
+  # 训练参数
+  learning_rate: 0.001
+  batch_size: 64
+  num_epochs: 300
+
+  # 监控指标
+  monitor: 'val_acc'  # 监控验证准确率而非损失
+  patience: 50        # 减少patience以更快收敛

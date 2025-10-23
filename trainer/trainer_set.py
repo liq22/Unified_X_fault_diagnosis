@@ -1,4 +1,4 @@
-import accelerate
+
 from pytorch_lightning.loggers import CSVLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks import ModelPruning
@@ -8,9 +8,8 @@ from .utils import ModelParametersLoggingCallback
 
 
 import pytorch_lightning as pl
-from lightning.pytorch import Trainer
-from lightning.pytorch.loggers import TensorBoardLogger
-from lightning.pytorch.loggers import WandbLogger
+from pytorch_lightning.loggers import TensorBoardLogger
+from pytorch_lightning.loggers import WandbLogger
 
 
 from torch.utils.tensorboard.writer import SummaryWriter   

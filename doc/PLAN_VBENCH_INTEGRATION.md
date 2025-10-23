@@ -126,11 +126,43 @@ class VbenchDataset(Dataset):
 - 可指定特定domain作为目标域, 默认最后一个, 不同
 
 ### 2.4 数据处理功能
-1. **滑动窗口采样**
-   - window_length: 窗口长度（如4096）
-   - stride: 滑动步长（如1024）
-   - padding_mode: 填充方式
-   - 从特定数据中提取固定数量的样本,比如CWRU 中label为1的样本 有很多个ID,首先随机选取N个ID,然后从每个ID中提取M个窗口样本 N*M = 设定值
+
+#### 1. 滑动窗口采样
+- window_length: 窗口长度（如4096）
+- stride: 滑动步长（如1024）
+- padding_mode: 填充方式
+
+#### 2. 智能采样策略
+为了高效控制数据集规模，实现分层采样机制：
+
+**核心规则**：
+- **构造ID池**：为每个类别构建固定大小的ID池（默认50个ID）
+  - 若该类真实ID数 ≥ 50：等概率无放回抽取50个ID
+  - 若该类真实ID数 < 50：循环重复这些ID直到池长=50
+  - 可通过配置`ids_cap`修改默认上限
+
+- **样本抽取**：
+  - 从ID池中等概率抽取1个ID（即1个数据文件）
+  - 在该文件上执行随机滑窗得到m个样本
+  - m = ceil(target_per_class / ids_pool_size)
+  - 重复直到达到每类目标样本数
+
+**算法流程**：
+```
+1. 按Label分组：获得每类的所有ID列表
+2. 构建ID池：每类最多保留ids_cap个ID
+3. 计算采样密度：samples_per_id = ceil(target_per_class / ids_cap)
+4. 循环采样：
+   while 样本数 < target_per_class:
+     - 随机选ID
+     - 提取samples_per_id个窗口
+```
+
+**优势**：
+- **规模可控**：精确控制每类样本数量
+- **多样性保证**：ID池机制确保样本多样性
+- **内存友好**：避免一次性加载所有数据
+- **可重现性**：固定随机种子确保结果一致
 
 
 ## 3. 配置文件设计
@@ -158,6 +190,26 @@ vbench_config:
 
   # 数据集筛选
   dataset_ids: ["RM_001_CWRU", "RM_002_XJTU"]  # 可指定特定数据集
+
+  # 智能采样配置
+  sampling_config:
+    # 采样方法：smart（智能分层）、random（随机）、balanced（平衡）
+    method: "smart"
+
+    # ID池配置
+    ids_cap: 50                # ID池大小上限，默认50
+    ensure_unique_ids: true      # 确保ID的唯一性（当数量足够时）
+
+    # 样本数量控制
+    target_per_class: 1000      # 每类目标样本数
+    min_samples_per_id: 1       # 每个ID最少提取样本数
+
+    # 滑窗参数
+    window_strategy: "random"   # random/sequential/stratified
+    windows_per_file: null       # 每个文件提取的窗口数（null表示自动计算）
+
+    # 重采样策略（当ID不足时）
+    resample_strategy: "repeat"  # repeat/circular/oversample
 
   # 窗口配置
   window_config:
@@ -375,7 +427,9 @@ class VbenchDataset(Dataset):
         self.meta = pd.read_excel(root/"metadata.xlsx")
         # 打开HDF5文件（惰性加载）
         self.h5 = h5py.File(root/"data.h5", "r")
-
+        self.corpus = None
+        if use_corpus and (root/"corpus.xlsx").exists():
+            self.corpus = pd.read_excel(root/"corpus.xlsx")
         # 预构建索引、窗口映射...
 
     def __getitem__(self, i):
@@ -404,6 +458,139 @@ class VbenchDataset(Dataset):
         """提取门控特征"""
         # 实现特征提取逻辑
         pass
+
+
+class SmartSampler:
+    """智能采样器，实现分层采样和ID池机制"""
+
+    def __init__(self, metadata, config):
+        """
+        初始化智能采样器
+        Args:
+            metadata: 元数据DataFrame
+            config: 采样配置字典
+        """
+        self.metadata = metadata
+        self.config = config
+        self.ids_cap = config.get('ids_cap', 50)
+        self.target_per_class = config.get('target_per_class', 1000)
+        self.seed = config.get('seed', 42)
+
+        # 设置随机种子
+        np.random.seed(self.seed)
+        random.seed(self.seed)
+
+    def build_id_pool(self, label_ids):
+        """
+        构建ID池
+        Args:
+            label_ids: 某个类别的所有ID列表
+        Returns:
+            id_pool: 构建好的ID池
+        """
+        if len(label_ids) >= self.ids_cap:
+            # 等概率无放回抽取
+            return random.sample(label_ids, self.ids_cap)
+        else:
+            # 循环重复直到达到池大小
+            pool = []
+            while len(pool) < self.ids_cap:
+                remaining = self.ids_cap - len(pool)
+                pool.extend(label_ids[:min(remaining, len(label_ids))])
+            return pool[:self.ids_cap]
+
+    def sample_class(self, label_id_pool, label_name):
+        """
+        为单个类别采样
+        Args:
+            label_id_pool: 该类别的ID池
+            label_name: 类别名称
+        Returns:
+            samples: 采样结果列表，每个元素为(id, start_pos, label)
+        """
+        samples = []
+        samples_per_id = max(1,
+                          math.ceil(self.target_per_class / len(label_id_pool)))
+
+        while len(samples) < self.target_per_class:
+            # 从ID池中等概率抽取一个ID
+            selected_id = random.choice(label_id_pool)
+
+            # 加载该ID的数据文件
+            data = self._load_h5_data(selected_id)
+            data_length = data.shape[0]  # L维度长度
+
+            # 随机滑窗采样
+            for _ in range(min(samples_per_id,
+                           self.target_per_class - len(samples))):
+                # 随机选择起始位置
+                max_start = max(0, data_length - self.config['window_length'])
+                if max_start > 0:
+                    start_pos = random.randint(0, max_start)
+                else:
+                    start_pos = 0
+
+                samples.append({
+                    'id': selected_id,
+                    'start_pos': start_pos,
+                    'label': label_name,
+                    'window_length': self.config['window_length']
+                })
+
+        return samples[:self.target_per_class]  # 确保不超过目标数
+
+    def sample_all_classes(self):
+        """
+        为所有类别采样
+        Returns:
+            all_samples: 所有类别的采样结果
+        """
+        # 1. 按Label分组
+        class_groups = self.metadata.groupby('Label')
+
+        all_samples = []
+        for label_name, group in class_groups:
+            # 2. 获取该类别的所有ID
+            label_ids = group['Id'].unique().tolist()
+
+            # 3. 构建ID池
+            id_pool = self.build_id_pool(label_ids)
+            print(f"Label {label_name}: "
+                  f"{len(label_ids)} IDs → {len(id_pool)} ID pool")
+
+            # 4. 为该类采样
+            samples = self.sample_class(id_pool, label_name)
+            all_samples.extend(samples)
+
+        return all_samples
+
+    def _load_h5_data(self, id):
+        """加载HDF5数据（惰性加载）"""
+        # 实现HDF5数据加载逻辑
+        pass
+
+
+# 使用示例
+if __name__ == "__main__":
+    # 配置参数
+    sampling_config = {
+        'ids_cap': 50,              # ID池大小
+        'target_per_class': 1000,   # 每类目标样本数
+        'window_length': 4096,      # 窗口长度
+        'seed': 42                  # 随机种子
+    }
+
+    # 读取元数据
+    metadata = pd.read_excel("metadata.xlsx")
+
+    # 创建采样器
+    sampler = SmartSampler(metadata, sampling_config)
+
+    # 执行采样
+    samples = sampler.sample_all_classes()
+
+    print(f"总采样数: {len(samples)}")
+    print(f"类别分布: {pd.Series([s['label'] for s in samples]).value_counts()}")
 ```
 
 ### 8.2 MoE（混合专家）门控特征与路由
@@ -480,6 +667,13 @@ gating:
 - **留一法准确率**：CWRU数据集上 > 95%
 - **跨数据集泛化**：CWRU → XJTU 迁移准确率 > 85%
 - **小样本学习**：K-shot（K=64）准确率 > 90%
+
+#### 智能采样效率基准
+- **ID池构建时间**：< 0.1秒（每类1000个ID）
+- **采样执行时间**：< 5秒（生成10000个样本）
+- **内存占用增量**：< 100MB（采样索引存储）
+- **采样均衡性**：类别间样本数差异 < 1%
+- **ID覆盖度**：50个ID池覆盖 > 95%的数据多样性
 
 ### 9.2 HDF5数据访问优化
 
