@@ -183,25 +183,48 @@ def get_dataset_ids_from_metadata(metadata_path):
     """从metadata文件中获取所有Dataset ID"""
     try:
         metadata = pd.read_excel(metadata_path)
+        logger.info(f"成功读取metadata，共{len(metadata)}行，{len(metadata.columns)}列")
+
         # 提取所有Dataset_id并去重
         dataset_ids = metadata['Dataset_id'].dropna().unique()
-        # 过滤出数字ID（去除可能的非数字值）
+        logger.info(f"Dataset_id列的数据类型: {metadata['Dataset_id'].dtype}")
+
+        # 转换为整数列表（处理numpy类型）
         numeric_ids = []
         for did in dataset_ids:
-            # 尝试转换为数字
-            try:
-                if isinstance(did, (int, float)):
-                    numeric_ids.append(int(did))
-                elif isinstance(did, str) and did.isdigit():
-                    numeric_ids.append(int(did))
-            except:
-                continue
+            # 处理numpy.int64等类型
+            import numpy as np
+            if isinstance(did, (int, float, np.integer, np.floating)):
+                numeric_ids.append(int(did))
+            elif isinstance(did, str) and did.isdigit():
+                numeric_ids.append(int(did))
 
         # 排序并去重
         unique_ids = sorted(list(set(numeric_ids)))
+
+        # 打印调试信息
+        logger.info(f"从metadata找到的Dataset IDs: {unique_ids}")
+        logger.info(f"共找到 {len(unique_ids)} 个数据集")
+
         return unique_ids
+    except FileNotFoundError:
+        logger.error(f"Metadata文件未找到: {metadata_path}")
+        logger.error("请检查文件路径是否正确")
+        return []
+    except KeyError as e:
+        logger.error(f"Metadata中没有找到Dataset_id列: {e}")
+        logger.info("可用的列名:")
+        try:
+            metadata = pd.read_excel(metadata_path)
+            for i, col in enumerate(metadata.columns, 1):
+                logger.info(f"  {i}. {col}")
+        except:
+            pass
+        return []
     except Exception as e:
         logger.error(f"读取metadata失败: {e}")
+        import traceback
+        traceback.print_exc()
         return []
 
 
@@ -222,6 +245,15 @@ def main():
 
     # 获取所有可用的Dataset ID
     all_dataset_ids = get_dataset_ids_from_metadata(metadata_path)
+
+    # 检查是否找到数据集
+    if not all_dataset_ids:
+        logger.error("未能找到任何Dataset ID！")
+        logger.error("请检查：")
+        logger.error("1. metadata文件是否存在于正确路径")
+        logger.error("2. Dataset_id列是否存在")
+        return
+
     logger.info(f"发现 {len(all_dataset_ids)} 个数据集: {all_dataset_ids}")
 
     # 确定要测试的数据集
@@ -246,6 +278,11 @@ def main():
         logger.info(f"模式：测试单个数据集 {args.single_dataset}")
     else:
         logger.error("请指定测试模式：--all-datasets, --id-range 或 --single-dataset")
+        return
+
+    # 检查是否有选中的数据集
+    if not selected_ids:
+        logger.error("没有选中的数据集进行测试！")
         return
 
     logger.info(f"将测试 {len(selected_ids)} 个数据集: {selected_ids}")

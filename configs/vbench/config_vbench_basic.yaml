@@ -12,15 +12,18 @@ vbench_config:
   # 数据路径配置
   data_dir: "/home/user/data/PHMbenchdata/PHM-Vibench"
   metadata_file: "metadata_6_11.xlsx"
-  data_file: "data.h5"
+  # data_file: "cache.h5"  # 已解耦，改为按数据集动态加载H5文件
   # corpus_file: "corpus.xlsx"  # 可选，如果存在则加载
+
+  # 解耦配置
+  # fallback_cache: false  # 是否使用旧的cache.h5作为回退
 
   # 任务配置
   task_type: "fault_diagnosis"  # 当前仅支持fault_diagnosis
   target_column: "Label"        # Label字段
 
   # 数据集筛选
-  dataset_ids: ["RM_001_CWRU", "RM_002_XJTU", "RM_003_FEMTO", "RM_006_THU", "RM_026_HUST23"]  # 可指定特定数据集
+  dataset_ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]  # 使用纯数字Dataset ID
   # fault_levels: [1, 2, 3]      # 故障级别筛选（可选）
 
   # 智能采样配置

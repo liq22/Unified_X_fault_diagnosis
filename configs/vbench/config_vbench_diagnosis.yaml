@@ -4,12 +4,22 @@
 # 使用YAML继承（需要安装hydra或omegaconf）
 # 或者直接复制相关配置覆盖
 
+############### model_config ####################
+signal_processing_configs:
+  layer1: ['I', 'WF', 'HT', 'FFT']
+  layer2: ['I', 'WF', 'HT', 'FFT']
+  layer3: ['I', 'WF', 'HT', 'FFT']
+  layer4: ['I', 'WF', 'HT', 'FFT']
+
+feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy', 'Max', 'Min', 'AbsMean', 'Kurtosis', 'RMS', 'CrestFactor', 'Skewness', 'ClearanceFactor', 'ShapeFactor']
+
 ############### Vbench诊断配置 ####################
 vbench_config:
   # 任务类型固定为故障诊断
   task_type: "fault_diagnosis"
   target_column: "Label"
-
+  data_dir: "/home/user/data/PHMbenchdata/PHM-Vibench"
+  metadata_file: "metadata_6_11.xlsx"
   # 诊断特定采样配置
   sampling_config:
     # 确保类别平衡
@@ -18,10 +28,10 @@ vbench_config:
     ids_cap: 50              # ID池大小
 
   # 数据集筛选（可根据需要取消注释）
-  dataset_ids: ["RM_001_CWRU"]  # CWRU轴承数据集
-  # dataset_ids: ["RM_002_XJTU"]  # 西交大轴承数据集
-  # dataset_ids: ["RM_003_FEMTO"]  # FEMTO-STT轴承数据集
-  # dataset_ids: ["RM_006_THU"]    # 清华轴承数据集
+  dataset_ids: [1]  # CWRU轴承数据集
+  # dataset_ids: [2]  # 西交大轴承数据集
+  # dataset_ids: [3]  # FEMTO-STT轴承数据集
+  # dataset_ids: [6]  # 清华轴承数据集
 
   # 域自适应配置
   domain_config:
@@ -37,8 +47,18 @@ vbench_config:
 
 ############### 模型配置 ####################
 args:
+  # 数据集任务
+  dataset_task: VBENCH_basic  # Vbench数据集任务
+
   # 自动检测类别数
   num_classes: null  # 将在数据加载时自动设置
+
+  # 设备配置
+  device: cuda
+  gpus: 1
+
+  # 随机种子
+  seed: 17
 
   # TSPN模型参数（适用于故障诊断）
   model: TSPN
@@ -46,12 +66,25 @@ args:
   in_channels: 2
   out_channels: 3
   scale: 4
+  in_dim: 4096
+  out_dim: 4096
+
+  # 信号处理参数
+  f_c_mu: 0
+  f_c_sigma: 0.1
+  f_b_mu: 0
+  f_b_sigma: 0.1
 
   # 训练参数
   learning_rate: 0.001
   batch_size: 64
   num_epochs: 300
+  weight_decay: 0.0001
+  num_workers: 8
 
   # 监控指标
   monitor: 'val_acc'  # 监控验证准确率而非损失
   patience: 50        # 减少patience以更快收敛
+  l1_norm: 0.01
+  pruning: None
+  snr: 1
