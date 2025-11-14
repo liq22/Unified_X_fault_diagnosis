@@ -59,6 +59,7 @@ class OptimizedSignalProcessingLayer(nn.Module):
 
     def _adjust_channels(self, channels, divisor):
         """确保通道数能被divisor整除"""
+        print(f"Adjusting channels from {channels} to be divisible by {divisor}")
         return ((channels + divisor - 1) // divisor) * divisor
 
     def _get_weights(self):
