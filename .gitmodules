@@ -1,3 +1,6 @@
 [submodule "Paper/TII_operator_attention"]
 	path = Paper/TII_operator_attention
 	url = git@github.com:liq22/TII_operator_attention.git
+[submodule "Paper/Paper_fuzzy_XFD"]
+	path = Paper/Paper_fuzzy_XFD
+	url = https://github.com/liq22/Paper_fuzzy_XFD.git
