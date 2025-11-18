@@ -38,38 +38,37 @@ self.weight_connection.weight.data = F.softmax((1.0 / self.temperature) *
 .to(self.args.device)
 ```
 
-#### 优化方案
+#### 优化方案（修订）
 ```python
 class OptimizedSignalProcessingLayer(nn.Module):
+    """仅展示与权重归一化/缓存相关的关键片段。"""
     def __init__(self, signal_processing_modules, input_channels, output_channels,
-                 num_heads=4, skip_connection=True, temperature=0.1, device=None):
+                 num_heads=4, skip_connection=True, temperature=0.1):
         super().__init__()
+        self.signal_processing_modules = signal_processing_modules
+        self.module_num = len(signal_processing_modules)
+        self.weight_connection = nn.Linear(input_channels, output_channels)
+        self.temperature = float(temperature)
+        # 推理态缓存；训练态每步重算。由上层/Lightning 统一迁移设备
+        self.register_buffer('cached_weights', None, persistent=False)
 
-        # 动态调整输出通道数，确保能被模块数整除
-        module_num = len(signal_processing_modules)
-        self.adjusted_output_channels = self._adjust_channels(output_channels, module_num)
-
-        # 预计算权重矩阵，使用缓冲区避免重复计算
-        self.register_buffer('precomputed_weights', None)
-        self.temperature = nn.Parameter(torch.tensor(temperature))
-
-        # 统一设备管理
-        self.device = device or torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.to(self.device)
-
-    def _adjust_channels(self, channels, divisor):
-        """确保通道数能被divisor整除"""
-        print(f"Adjusting channels from {channels} to be divisible by {divisor}")
+    @staticmethod
+    def _adjust_channels(channels, divisor):
         return ((channels + divisor - 1) // divisor) * divisor
 
-    def _get_weights(self):
-        """获取或计算权重矩阵"""
-        if self.precomputed_weights is None or self.training:
-            weights = F.softmax(self.weight_connection.weight / self.temperature, dim=0)
-            if not self.training:
-                self.precomputed_weights = weights
-            return weights
-        return self.precomputed_weights
+    def _normalized_weights(self):
+        # 避免写入 .data；训练态每步计算，评估态缓存一次
+        w = F.softmax(self.weight_connection.weight / max(self.temperature, 1e-6), dim=0)
+        if not self.training:
+            self.cached_weights = w.detach()
+        return w if self.training or self.cached_weights is None else self.cached_weights
+
+    def forward(self, x):
+        # ... 省略归一化与维度变换 ...
+        w = self._normalized_weights()
+        x = F.linear(x, w, self.weight_connection.bias)
+        # ... 其余逻辑 ...
+        return x
 ```
 
 ### 1.2 注意力机制优化
@@ -119,6 +118,10 @@ class ConfigurableChannelAttention(nn.Module):
             nn.Conv1d(hidden_dim, self.channel, 1, bias=False)
         )
 
+    def _variance_pooling(self, x):
+        """仅使用方差池化（与 _dual_pooling 互补）。"""
+        return (((x - x.mean(dim=-1, keepdim=True)) ** 2).mean(dim=-1, keepdim=True))
+
     def _dual_pooling(self, x):
         """结合方差和平均池化"""
         avg_out = nn.AdaptiveAvgPool1d(1)(x)
@@ -151,19 +154,13 @@ class ConfigurableChannelAttention(nn.Module):
         return attention_weights.view(b, c, 1)
 
     def _sparse_activation(self, x):
-        """Top-k稀疏激活"""
+        """Top-k 稀疏激活：逐样本 softmax + scatter 回填。"""
         b, c, _ = x.size()
         x_flat = x.view(b, c)
         topk_values, topk_indices = torch.topk(x_flat, self.topk, dim=1)
-
-        # 创建稀疏矩阵
-        mask = torch.zeros_like(x_flat)
-        mask.scatter_(1, topk_indices, 1)
-
-        # 应用softmax到topk值
+        probs = F.softmax(topk_values, dim=1)
         sparse_x = torch.zeros_like(x_flat)
-        sparse_x[mask == 1] = F.softmax(topk_values.flatten(), dim=0)[:self.topk]
-
+        sparse_x.scatter_(1, topk_indices, probs)
         return sparse_x.view(b, c, 1)
 ```
 
@@ -196,47 +193,38 @@ class OptimizedCustomBatchNorm(nn.Module):
             self.register_parameter('bias', None)
 
     def forward(self, x):
-        # 输入形状: (B, L, C) 或 (B, C, L)
-        original_shape = x.shape
-        if x.dim() == 3 and original_shape[-1] == self.num_features:
-            # (B, L, C) -> (B, C, L)
-            x = x.transpose(1, 2)
+        # 输入形状: (B, L, C) 或 (B, C, L) 或 (B, C)
+        need_transpose = False
+        if x.dim() == 3 and x.shape[-1] == self.num_features:
+            x = x.transpose(1, 2)  # (B,C,L)
             need_transpose = True
-        else:
-            need_transpose = False
 
+        reduce_dims = [0] + ([2] if x.dim() == 3 else [])
         if self.training:
-            # 计算批次统计量
-            batch_mean = x.mean(dim=[0, 2])
-            batch_var = x.var(dim=[0, 2], unbiased=False)
-
-            # 更新运行统计量
+            batch_mean = x.mean(dim=reduce_dims)
+            batch_var = x.var(dim=reduce_dims, unbiased=False)
             with torch.no_grad():
-                self.running_mean = (1 - self.momentum) * self.running_mean + \
-                                   self.momentum * batch_mean
-                self.running_var = (1 - self.momentum) * self.running_var + \
-                                  self.momentum * batch_var
-                self.num_batches_tracked += 1
-
-            # 使用批次统计量
-            mean = batch_mean
-            var = batch_var
+                m = self.momentum
+                self.running_mean.mul_(1 - m).add_(m * batch_mean)
+                self.running_var.mul_(1 - m).add_(m * batch_var)
+                self.num_batches_tracked.add_(1)
+            mean, var = batch_mean, batch_var
         else:
-            # 使用运行统计量
-            mean = self.running_mean
-            var = self.running_var
+            mean, var = self.running_mean, self.running_var
 
-        # 归一化
-        x = (x - mean[None, :, None]) / torch.sqrt(var[None, :, None] + self.eps)
+        if x.dim() == 3:
+            x = (x - mean[None, :, None]) / torch.sqrt(var[None, :, None] + self.eps)
+        else:  # (B,C)
+            x = (x - mean[None, :]) / torch.sqrt(var[None, :] + self.eps)
 
-        # 缩放和偏移
         if self.affine:
-            x = x * self.weight[None, :, None] + self.bias[None, :, None]
+            if x.dim() == 3:
+                x = x * self.weight[None, :, None] + self.bias[None, :, None]
+            else:
+                x = x * self.weight[None, :] + self.bias[None, :]
 
-        # 恢复原始形状
         if need_transpose:
             x = x.transpose(1, 2)
-
         return x
 ```
 
@@ -249,44 +237,23 @@ class OptimizedCustomBatchNorm(nn.Module):
 - 重复的维度变换操作
 - 内存访问模式不优
 
-#### 优化实现
+#### 优化实现（修订：优先向量化与 torch.compile，谨慎使用 JIT）
 ```python
 class ParallelSignalProcessing(nn.Module):
-    def __init__(self, signal_processing_modules, *args, **kwargs):
+    def __init__(self, signal_processing_modules):
         super().__init__()
         self.modules_list = nn.ModuleList(list(signal_processing_modules.values()))
-        self.use_jit = kwargs.get('use_jit', True)
-
-        # 编译加速（可选）
-        if self.use_jit:
-            self._compile_modules()
-
-    def _compile_modules(self):
-        """使用TorchScript编译加速"""
-        for i, module in enumerate(self.modules_list):
-            self.modules_list[i] = torch.jit.script(module)
-
-    @torch.jit.script  # 使用JIT编译
-    def parallel_process(self, x_splits: List[torch.Tensor]) -> List[torch.Tensor]:
-        """并行处理所有模块"""
-        outputs = []
-        for module, split in zip(self.modules_list, x_splits):
-            outputs.append(module(split))
-        return outputs
 
     def forward(self, x):
-        # 确保内存连续性
+        # 保持内存连续，减少不必要的 view/copy
         x = x.contiguous()
-
-        # 并行分割（更高效）
-        chunk_size = x.size(2) // len(self.modules_list)
-        x_splits = torch.chunk(x, len(self.modules_list), dim=2)
-
-        # 并行处理
-        outputs = self.parallel_process(list(x_splits))
-
-        # 高效拼接
+        splits = torch.chunk(x, len(self.modules_list), dim=2)
+        outputs = [m(s) for m, s in zip(self.modules_list, splits)]
         return torch.cat(outputs, dim=2)
+
+# 可选：在外部用 torch.compile 包装上层网络
+# if hasattr(torch, 'compile'):
+#     model = torch.compile(model, mode='max-autotune', fullgraph=False)
 ```
 
 ### 2.2 内存优化
@@ -296,7 +263,7 @@ class ParallelSignalProcessing(nn.Module):
 - FeatureExtractor中的张量拼接导致内存碎片
 - 缺乏梯度检查点
 
-#### 优化方案
+#### 优化方案（修订 checkpoint 用法）
 ```python
 class MemoryEfficientNNSPN(nn.Module):
     def __init__(self, *args, **kwargs):
@@ -312,26 +279,26 @@ class MemoryEfficientNNSPN(nn.Module):
         else:
             return self._standard_forward(x)
 
-    @torch.utils.checkpoint.checkpoint
     def _memory_efficient_forward(self, x):
-        """使用梯度检查点的内存高效前向传播"""
+        """使用梯度检查点的内存高效前向传播（函数式 checkpoint 调用）。"""
         # 检查是否需要存储中间结果
         store_attention = self.enable_visualization and not self.training
 
         # 通过信号处理层
         for layer in self.signal_processing_layers:
-            x = layer(x)
+            if self.enable_checkpointing and self.training:
+                x = torch.utils.checkpoint.checkpoint(layer, x)
+            else:
+                x = layer(x)
 
             # 只在需要时存储注意力权重
             if store_attention and hasattr(layer, 'channel_attention'):
                 self._store_attention_weights(layer.channel_attention)
 
-        # 特征提取（使用inplace操作）
+        # 特征提取
         x = self.feature_extractor_layers(x)
-
         # 分类
         x = self.clf(x)
-
         return x
 
     def _store_attention_weights(self, attention_module):
@@ -372,7 +339,7 @@ class StableOperations:
 
 ## 3. 代码质量改进
 
-### 3.1 配置系统重构
+### 3.1 配置系统重构（补齐字段与兼容性说明）
 
 ```python
 from dataclasses import dataclass, field
@@ -389,13 +356,16 @@ class NNSPNConfig:
     scale: float = 4.0
     num_layers: int = 4
     num_heads: int = 4
+    in_dim: int = 4096
+    out_dim: int = 4096
+    num_classes: int = 7
 
     # === 注意力机制参数 ===
     attention_config: Dict[str, Union[int, float, bool]] = field(default_factory=lambda: {
         'reduction': 16,
         'topk': 10,
         'temperature': 0.1,
-        'enable_variance_pooling': True,
+        'enable_variance': True,  # 对应 ConfigurableChannelAttention.enable_variance
         'enable_time_attention': True,
         'pooling_strategy': 'both'
     })
@@ -464,6 +434,8 @@ class NNSPNConfig:
         return dataclasses.asdict(self)
 ```
 
+说明：保持与现有 `configs/config.py` 的 YAML 解析兼容。当前训练入口仍通过 `configs/config.py:parse_arguments` 生成 `args: SimpleNamespace`；建议在不替换现有解析流程的前提下，引入 `NNSPNConfig` 仅作为 NNSPN 内部结构体（可选），通过简单的适配函数（例如 `from_dict(args.__dict__)`）完成映射，避免同时维护两套“权威配置源”。
+
 ### 3.2 模块化重构
 
 ```python
@@ -476,11 +448,11 @@ class ModuleFactory:
                                      layer_idx: int) -> nn.Module:
         """创建信号处理层"""
         return SignalProcessingLayer(
-            signal_processing_modules=modules,
-            input_channels=config.in_channels if layer_idx == 0 else config.out_channels,
+            modules,
+            input_channels=(config.in_channels if layer_idx == 0 else config.out_channels),
             output_channels=config.out_channels,
             num_heads=config.num_heads,
-            temperature=config.attention_config['temperature']
+            skip_connection=True,
         )
 
     @staticmethod
@@ -542,11 +514,12 @@ class ModularNNSPN(nn.Module):
 
     def _get_layer_modules(self, layer_idx: int) -> Dict[str, nn.Module]:
         """获取指定层的信号处理模块"""
-        # 从配置或预定义模板中获取
+        # 伪代码：实际实现中应复用 configs/config.py 中构建好的 signal_processing_modules
+        # 这里以当前仓库中常用的几类算子命名为例（具体构造参数略去）：
         return {
             'I': Identity(),
-            'FFT': FFTModule(),
-            'WF': WaveletFilter(),
+            'FFT': FFTSignalProcessing(),
+            'WF': WaveFilters(),
             'HT': HilbertTransform(),
         }
 ```
@@ -621,6 +594,14 @@ class NNSPNTester:
 
 ## 4. 实施路线图
 
+### 零阶段：最小侵入式修复（0.5-1周）
+1. **针对当前 `model/NNSPN.py` 的小步优化**
+   - 去除 `SignalProcessingLayer` / `FeatureExtractorlayer` 中对 `weight.data` 的原地写入，改为函数式 softmax / `F.linear`（参考 1.1 的写法），保持输入输出维度完全不变。
+   - 将 `CustomBatchNorm` 的 `eps` 调整到 `1e-5` 量级，并显式引入 `momentum` 参数，保证数值稳定性与 PyTorch 标准 BatchNorm 行为一致（参考 1.3）。
+2. **补充最小测试与日志**
+   - 在不改动训练脚本的前提下，增加一个最小正向/反向检查（可借鉴 3.3 中 `NNSPNTester.test_dimension_compatibility` 与 `test_gradient_flow` 的思路），对典型数据长度（如 4096）做快速验证。
+   - 保持现有配置和 Lightning 入口不变，仅在模型内部增加必要的断言与报错信息，便于定位维度不匹配问题。
+
 ### 第一阶段：紧急修复（1周）
 1. **修复维度兼容性问题**
    - 移除硬编码断言
@@ -639,9 +620,9 @@ class NNSPNTester:
    - 添加自适应温度参数
 
 2. **并行计算优化**
-   - 实现模块并行处理
-   - 添加JIT编译支持
-   - 优化内存访问模式
+   - 优先向量化拆分/拼接逻辑（减少不必要的维度变换）
+   - 可选使用 `torch.compile` 包装上层网络（PyTorch 2.x）
+   - 谨慎引入 JIT，仅对白名单算子与无复数/FFT路径尝试
 
 ### 第三阶段：代码质量提升（1周）
 1. **配置系统实现**
@@ -661,9 +642,18 @@ class NNSPNTester:
    - 性能分析工具
 
 2. **部署优化**
-   - 量化感知训练
-   - ONNX导出支持
-   - TensorRT优化
+   - 量化感知训练（优先前向实数算子路径）
+   - ONNX导出支持（规避/替代复数与 `torch.fft`，必要时提供自定义算子或前后端特化）
+   - TensorRT优化（基于 ONNX 子图，关注 1D Conv/Linear/激活等主干）
+
+### 实现注意事项与验证指标（新增）
+- 设备管理：由 Lightning/上层统一控制，模块内部不在 `__init__` 中调用 `.to(device)`。
+- 权重归一化：前向使用 `F.linear` 与 softmax 归一化权重，禁止对 `weight.data` 原地写入。
+- Top‑k 稀疏化：逐样本 softmax 后 scatter 回填，避免跨 batch 展平误用。
+- 梯度检查点：使用 `torch.utils.checkpoint.checkpoint(layer, x)` 的函数式调用，不使用装饰器。
+- 数值稳定性：`CustomBatchNorm` 采用 `eps=1e-5`、`momentum=0.1`，缓冲区原地更新。
+- 性能度量：记录吞吐（samples/s）、每步耗时（ms/step）、峰值显存与 CPU 内存。
+- 等价性检查：在不改变数值意图的重构阶段，确保验证集指标不下降（< 0.2% 波动）。
 
 ## 5. 风险评估与缓解
 
