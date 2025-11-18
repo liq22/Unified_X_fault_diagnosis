@@ -4,3 +4,9 @@
 [submodule "Paper/Paper_fuzzy_XFD"]
 	path = Paper/Paper_fuzzy_XFD
 	url = https://github.com/liq22/Paper_fuzzy_XFD.git
+[submodule "Paper/MOE_explainable"]
+	path = Paper/MOE_explainable
+	url = ./Paper/MOE_explainable
+[submodule "Paper/1D-2D_fusion_explainable"]
+	path = Paper/1D-2D_fusion_explainable
+	url = ./Paper/1D-2D_fusion_explainable
