@@ -13,3 +13,6 @@
 [submodule "Paper/Explainable_FD_Toolkit"]
 	path = Paper/Explainable_FD_Toolkit
 	url = https://github.com/liq22/Explainable_FD_Toolkit.git
+[submodule "Paper/Explainable_FD_Toolkit"]
+	path = Paper/LLM_Explainable_FD_Toolkit
+	url = ./Paper/LLM_Explainable_FD_Toolkit
