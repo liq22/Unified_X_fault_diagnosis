@@ -577,7 +577,3 @@
 * 为 `MOE_explainable` 提供「可解释路由/权重」的基础形式；
 * 为 `1D-2D_fusion_explainable` 提供算子/模态级的 attention 机制；
 * 为 `Neuralsymbolic_theory` 提供具体的「算子层可解释机制」案例。
-
----
-
-如果你愿意，下一步我可以把这 7 个子项目的「近期里程碑」直接转成一份 GitHub Project issue 列表（每条就是一个 issue 的 title + 描述），你一贴就能开始排期。
