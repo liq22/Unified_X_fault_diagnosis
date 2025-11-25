@@ -16,3 +16,6 @@
 [submodule "Paper/Explainable_FD_Toolkit"]
 	path = Paper/LLM_Explainable_FD_Toolkit
 	url = ./Paper/LLM_Explainable_FD_Toolkit
+[submodule "Paper/Neuralsymbolic_theory"]
+	path = Paper/Neuralsymbolic_theory
+	url = .Paper/Neuralsymbolic_theory
