@@ -10,3 +10,6 @@
 [submodule "Paper/1D-2D_fusion_explainable"]
 	path = Paper/1D-2D_fusion_explainable
 	url = ./Paper/1D-2D_fusion_explainable
+[submodule "Paper/Explainable_FD_Toolkit"]
+	path = Paper/Explainable_FD_Toolkit
+	url = ./Paper/Explainable_FD_Toolkit
