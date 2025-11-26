@@ -1,0 +1,325 @@
+# Claude Code Configuration
+# Automatic Execution Logging System
+# Version: 1.0.0
+
+logging:
+  # Core logging settings
+  enabled: true
+  auto_capture: true
+  real_time: true
+  
+  # Storage settings
+  log_path: "logs/executions"
+  retention_days: 90
+  compression: true
+  max_file_size_mb: 10
+  
+  # Keyword extraction settings
+  keyword_extraction: true
+  max_keywords: 5
+  min_keyword_length: 3
+  
+  # Performance settings
+  background_logging: true
+  buffer_size: 1000
+  flush_interval: 30  # seconds
+  
+  # Hook integration
+  hooks:
+    enabled: true
+    pre_execute_hook: ".claude/hooks/pre-execute.py"
+    post_execute_hook: ".claude/hooks/post-execute.py"
+    session_manager: ".claude/hooks/session-manager.py"
+  
+  # File naming
+  filename_format: "{timestamp}_{keywords}.log"
+  timestamp_format: "%Y-%m-%d_%H-%M-%S"
+  max_filename_length: 100
+  
+  # Content filtering
+  filters:
+    exclude_empty_sessions: true
+    exclude_short_sessions: true  # < 5 seconds
+    min_user_query_length: 5
+    
+  # Privacy settings
+  privacy:
+    anonymize_paths: false
+    exclude_environment: true
+    exclude_sensitive_data: true
+    sensitive_patterns:
+      - "password"
+      - "token"
+      - "key"
+      - "secret"
+      - "api_key"
+
+analytics:
+  # Analytics generation
+  enabled: true
+  auto_generate: true
+  generation_interval: "daily"  # daily, weekly, monthly
+  
+  # Report settings
+  reports:
+    include_trends: true
+    include_performance: true
+    include_recommendations: true
+    export_formats: ["json", "markdown", "csv"]
+  
+  # Retention
+  keep_daily_reports: 90
+  keep_weekly_reports: 52
+  keep_monthly_reports: 12
+
+search:
+  # Search capabilities
+  index_content: true
+  index_keywords: true
+  index_tools: true
+  index_agents: true
+  
+  # Performance
+  max_search_results: 100
+  search_timeout: 30  # seconds
+  
+  # Ranking
+  keyword_weight: 0.4
+  content_weight: 0.3
+  recency_weight: 0.2
+  success_weight: 0.1
+
+cache:
+  # Integration with existing cache system
+  integrate_with_cache: true
+  share_keywords: true
+  cross_reference: true
+  
+  # Cache-specific settings
+  cache_search_results: true
+  cache_analytics: true
+  cache_ttl: 3600  # 1 hour
+
+ui:
+  # User interface settings
+  interactive_viewer: true
+  console_colors: true
+  progress_indicators: true
+  
+  # Display preferences
+  default_page_size: 20
+  max_query_display_length: 80
+  timestamp_display_format: "%Y-%m-%d %H:%M:%S"
+
+monitoring:
+  # Session monitoring
+  enabled: true
+  check_interval: 300  # 5 minutes
+  max_session_age_hours: 24
+  
+  # Health checks
+  disk_space_check: true
+  min_free_space_gb: 1
+  log_rotation: true
+  
+  # Alerts
+  alert_on_failures: true
+  failure_threshold: 0.2  # 20%
+
+export:
+  # Export capabilities
+  formats: ["json", "csv", "markdown", "txt"]
+  include_metadata: true
+  compress_exports: true
+  
+  # Batch export
+  batch_size: 1000
+  parallel_export: true
+
+debugging:
+  # Debug settings
+  verbose_logging: false
+  debug_hooks: false
+  trace_execution: false
+  
+  # Error handling
+  continue_on_errors: true
+  log_errors: true
+  error_log_path: "logs/analytics/errors.log"
+
+# Integration settings
+integration:
+  # MCP integration
+  mcp_academic_researcher: true
+  
+  # Agent system integration
+  agent_logging: true
+  tool_logging: true
+  file_access_logging: true
+  
+  # External tools
+  git_integration: false
+  notion_export: false
+  obsidian_export: false
+
+# Performance tuning
+performance:
+  # Threading
+  use_background_threads: true
+  max_worker_threads: 4
+  
+  # Memory management
+  max_memory_mb: 500
+  gc_frequency: 100  # operations
+  
+  # I/O optimization
+  batch_writes: true
+  async_io: true
+  buffer_writes: true
+
+# Advanced features
+advanced:
+  # Machine learning features
+  use_ml_keywords: false
+  sentiment_analysis: false
+  topic_modeling: false
+  
+  # Pattern recognition
+  detect_workflows: true
+  identify_bottlenecks: true
+  suggest_optimizations: true
+  
+  # Collaboration features
+  multi_user_support: false
+  session_sharing: false
+  team_analytics: false
+
+# Default user preferences (can be overridden per user)
+defaults:
+  timezone: "UTC"
+  date_format: "ISO"
+  preferred_export_format: "markdown"
+  default_search_days: 30
+  default_analytics_period: 30
+
+# Goal-Oriented Agent Management System
+agent_management:
+  # Core settings
+  enabled: true
+  auto_tracking: true
+  real_time_metrics: true
+  
+  # Goal management
+  goals:
+    enabled: true
+    config_path: ".claude/goals/agent_goals.yaml"
+    tracking_path: ".claude/goals/goal_tracking.json"
+    performance_metrics_path: ".claude/goals/performance_metrics.json"
+    auto_update: true
+    
+  # Task tracking
+  task_tracking:
+    enabled: true
+    base_path: ".claude/Task"
+    auto_capture: true
+    pattern_analysis: true
+    recommendation_engine: true
+    max_task_history: 1000
+    
+    # Task classification
+    classify_tasks: true
+    extract_requirements: true
+    estimate_complexity: true
+    assess_priority: true
+    
+  # Summary generation
+  summary_generation:
+    enabled: true
+    base_path: ".claude/doc"
+    auto_generate: true
+    markdown_format: true
+    json_backup: true
+    max_summaries_per_agent: 500
+    
+    # Summary content
+    include_actions: true
+    include_results: true
+    include_challenges: true
+    include_learnings: true
+    include_metrics: true
+    include_patterns: true
+    
+  # Performance tracking
+  performance:
+    enabled: true
+    real_time_calculation: true
+    trend_analysis: true
+    goal_achievement_tracking: true
+    
+    # Metrics calculation
+    success_weight: 0.3
+    efficiency_weight: 0.25
+    quality_weight: 0.25
+    user_satisfaction_weight: 0.2
+    
+    # Thresholds
+    excellent_threshold: 0.9
+    good_threshold: 0.7
+    improvement_threshold: 0.5
+    
+  # Agent enhancement
+  enhancement:
+    auto_enhance_new_agents: true
+    backup_before_enhancement: true
+    validation_after_enhancement: true
+    rollback_on_failure: true
+    
+  # Integration with existing systems
+  integration:
+    logging_system: true
+    cache_system: true
+    hook_system: true
+    share_metrics: true
+    cross_reference_data: true
+    
+  # Reporting and analytics
+  reporting:
+    enabled: true
+    auto_generate_reports: true
+    daily_summaries: true
+    weekly_analytics: true
+    monthly_trends: true
+    
+    # Report formats
+    export_formats: ["json", "markdown", "yaml"]
+    include_charts: false  # ASCII charts in markdown
+    include_recommendations: true
+    
+  # Data retention
+  retention:
+    task_history_days: 365
+    summary_retention_days: 365
+    performance_data_days: 365
+    goal_tracking_days: 1095  # 3 years
+    
+  # User interface
+  ui:
+    show_goal_progress: true
+    show_performance_feedback: true
+    colorized_output: true
+    progress_indicators: true
+    success_celebrations: true
+    
+  # Notifications
+  notifications:
+    goal_achievement: true
+    performance_alerts: true
+    improvement_suggestions: true
+    system_health: true
+    
+  # Advanced features
+  advanced:
+    predictive_analytics: false
+    ml_performance_optimization: false
+    cross_agent_learning: true
+    adaptive_goal_adjustment: false

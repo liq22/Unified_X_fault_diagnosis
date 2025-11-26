@@ -1,0 +1,314 @@
+metadata:
+  version: '1.0'
+  created: '2025-08-23T16:55:10.528870'
+  description: Goal definitions for 18-agent research system
+agents:
+  research-literature:
+    mission: Enable comprehensive, accurate, and efficient literature discovery and
+      synthesis
+    success_criteria:
+    - Find 90%+ relevant papers for any research query
+    - Complete systematic reviews 75% faster than manual methods
+    - Maintain 95%+ accuracy in data extraction
+    - Provide comprehensive coverage of research domains
+    key_metrics:
+    - relevance_score
+    - coverage_completeness
+    - time_efficiency
+    - user_satisfaction
+    - citation_accuracy
+    target_scores:
+      relevance_score: 0.9
+      coverage_completeness: 0.85
+      time_efficiency: 0.75
+      user_satisfaction: 0.9
+      citation_accuracy: 0.95
+  research-knowledge-graph:
+    mission: Construct comprehensive knowledge networks and identify research connections
+    success_criteria:
+    - Map 95%+ of citation relationships in target domains
+    - Identify novel cross-domain connections
+    - Generate actionable insights from network analysis
+    - Support research strategy planning
+    key_metrics:
+    - network_completeness
+    - connection_accuracy
+    - insight_quality
+    - strategy_support
+    target_scores:
+      network_completeness: 0.95
+      connection_accuracy: 0.9
+      insight_quality: 0.85
+      strategy_support: 0.8
+  research-hypothesis:
+    mission: Generate novel, testable hypotheses based on evidence analysis
+    success_criteria:
+    - Produce creative yet grounded research hypotheses
+    - Ensure 80%+ hypothesis testability
+    - Align hypotheses with research gaps
+    - Support breakthrough research directions
+    key_metrics:
+    - novelty_score
+    - testability_rate
+    - evidence_grounding
+    - breakthrough_potential
+    target_scores:
+      novelty_score: 0.85
+      testability_rate: 0.8
+      evidence_grounding: 0.9
+      breakthrough_potential: 0.75
+  research-gap-identifier:
+    mission: Systematically identify research gaps and unexplored opportunities
+    success_criteria:
+    - Find 95%+ of significant research gaps
+    - Prioritize gaps by research impact potential
+    - Suggest actionable research directions
+    - Support funding proposal development
+    key_metrics:
+    - gap_coverage
+    - impact_assessment
+    - actionability
+    - proposal_support
+    target_scores:
+      gap_coverage: 0.95
+      impact_assessment: 0.85
+      actionability: 0.8
+      proposal_support: 0.85
+  research-trends:
+    mission: Analyze research trends and predict future directions accurately
+    success_criteria:
+    - Identify emerging trends 6+ months early
+    - Achieve 80%+ prediction accuracy
+    - Support strategic research planning
+    - Guide resource allocation decisions
+    key_metrics:
+    - trend_detection_speed
+    - prediction_accuracy
+    - strategic_support
+    - resource_guidance
+    target_scores:
+      trend_detection_speed: 0.85
+      prediction_accuracy: 0.8
+      strategic_support: 0.85
+      resource_guidance: 0.75
+  research-academic:
+    mission: Provide comprehensive academic literature search and analysis
+    success_criteria:
+    - Access 90%+ of relevant academic sources
+    - Deliver high-quality bibliographic analysis
+    - Support rigorous research methodology
+    - Enable evidence-based decision making
+    key_metrics:
+    - source_coverage
+    - analysis_quality
+    - methodology_support
+    - evidence_quality
+    target_scores:
+      source_coverage: 0.9
+      analysis_quality: 0.85
+      methodology_support: 0.9
+      evidence_quality: 0.95
+  research-semantic-scholar:
+    mission: Optimize Semantic Scholar API integration for maximum research value
+    success_criteria:
+    - Maximize API efficiency and cost-effectiveness
+    - Deliver comprehensive paper metadata
+    - Support advanced search capabilities
+    - Enable large-scale literature analysis
+    key_metrics:
+    - api_efficiency
+    - metadata_completeness
+    - search_capability
+    - scale_support
+    target_scores:
+      api_efficiency: 0.9
+      metadata_completeness: 0.95
+      search_capability: 0.85
+      scale_support: 0.8
+  writer-intro-cluster:
+    mission: Create compelling, well-structured introductions that engage and inform
+    success_criteria:
+    - Generate Nature-quality introductions
+    - Achieve perfect logical flow and narrative coherence
+    - Integrate background, literature, and contributions seamlessly
+    - Meet journal-specific requirements consistently
+    key_metrics:
+    - narrative_quality
+    - logical_coherence
+    - integration_quality
+    - journal_compliance
+    target_scores:
+      narrative_quality: 0.95
+      logical_coherence: 0.9
+      integration_quality: 0.85
+      journal_compliance: 0.95
+  writer-method-cluster:
+    mission: Document methodologies with technical precision and clarity
+    success_criteria:
+    - Ensure complete reproducibility of methods
+    - Maintain mathematical rigor and accuracy
+    - Provide clear implementation guidelines
+    - Support peer review requirements
+    key_metrics:
+    - reproducibility_score
+    - mathematical_accuracy
+    - implementation_clarity
+    - review_readiness
+    target_scores:
+      reproducibility_score: 0.95
+      mathematical_accuracy: 0.98
+      implementation_clarity: 0.9
+      review_readiness: 0.85
+  writer-results-cluster:
+    mission: Present experimental results with clarity and statistical rigor
+    success_criteria:
+    - Ensure statistical significance and validity
+    - Create compelling data visualizations
+    - Provide comprehensive performance analysis
+    - Support scientific conclusions with evidence
+    key_metrics:
+    - statistical_rigor
+    - visualization_quality
+    - analysis_completeness
+    - evidence_support
+    target_scores:
+      statistical_rigor: 0.95
+      visualization_quality: 0.9
+      analysis_completeness: 0.85
+      evidence_support: 0.9
+  writer-discussion-cluster:
+    mission: Provide insightful analysis and interpretation of research findings
+    success_criteria:
+    - Deliver deep, thoughtful interpretation of results
+    - Connect findings to broader research context
+    - Address limitations honestly and constructively
+    - Suggest meaningful future research directions
+    key_metrics:
+    - interpretation_depth
+    - contextual_connection
+    - limitation_analysis
+    - future_direction_quality
+    target_scores:
+      interpretation_depth: 0.9
+      contextual_connection: 0.85
+      limitation_analysis: 0.85
+      future_direction_quality: 0.8
+  writer-format-cluster:
+    mission: Ensure perfect formatting and presentation for target journals
+    success_criteria:
+    - Achieve 100% compliance with journal guidelines
+    - Optimize readability and visual appeal
+    - Ensure consistent style throughout
+    - Support multiple journal format requirements
+    key_metrics:
+    - format_compliance
+    - readability_score
+    - style_consistency
+    - multi_journal_support
+    target_scores:
+      format_compliance: 1.0
+      readability_score: 0.9
+      style_consistency: 0.95
+      multi_journal_support: 0.85
+  writer-quality-controller:
+    mission: Ensure Nature-level quality through 4-gate validation
+    success_criteria:
+    - Detect and prevent all quality issues
+    - Implement comprehensive validation protocols
+    - Maintain publication-ready standards
+    - Support continuous quality improvement
+    key_metrics:
+    - issue_detection_rate
+    - validation_completeness
+    - publication_readiness
+    - improvement_tracking
+    target_scores:
+      issue_detection_rate: 0.98
+      validation_completeness: 0.95
+      publication_readiness: 0.95
+      improvement_tracking: 0.9
+  writer-style-formatter:
+    mission: Apply journal-specific formatting with perfect accuracy
+    success_criteria:
+    - Master all major journal formatting requirements
+    - Achieve zero formatting errors
+    - Support rapid format conversion
+    - Enable multi-journal submission workflows
+    key_metrics:
+    - format_mastery
+    - error_rate
+    - conversion_speed
+    - workflow_support
+    target_scores:
+      format_mastery: 0.95
+      error_rate: 0.0
+      conversion_speed: 0.9
+      workflow_support: 0.85
+  writer-cache-manager:
+    mission: Optimize performance through intelligent caching and learning
+    success_criteria:
+    - Achieve 75% improvement in task efficiency
+    - Maintain high cache hit rates
+    - Enable pattern-based optimization
+    - Support continuous learning and improvement
+    key_metrics:
+    - efficiency_improvement
+    - cache_hit_rate
+    - pattern_recognition
+    - learning_effectiveness
+    target_scores:
+      efficiency_improvement: 0.75
+      cache_hit_rate: 0.8
+      pattern_recognition: 0.85
+      learning_effectiveness: 0.8
+  coder-reviewer:
+    mission: Ensure code quality, security, and maintainability excellence
+    success_criteria:
+    - Detect 100% of security vulnerabilities
+    - Maintain zero critical quality issues
+    - Ensure production-ready code standards
+    - Support continuous integration workflows
+    key_metrics:
+    - vulnerability_detection
+    - quality_score
+    - production_readiness
+    - ci_integration
+    target_scores:
+      vulnerability_detection: 1.0
+      quality_score: 0.95
+      production_readiness: 0.9
+      ci_integration: 0.85
+  coder-debugger:
+    mission: Achieve rapid and accurate debugging with root cause analysis
+    success_criteria:
+    - Resolve 95%+ of reported issues successfully
+    - Provide accurate root cause analysis
+    - Minimize debugging time and effort
+    - Support preventive debugging practices
+    key_metrics:
+    - resolution_rate
+    - analysis_accuracy
+    - time_efficiency
+    - prevention_support
+    target_scores:
+      resolution_rate: 0.95
+      analysis_accuracy: 0.9
+      time_efficiency: 0.85
+      prevention_support: 0.8
+  coder-industrial-ai:
+    mission: Deploy production-ready AI systems optimized for real-world use
+    success_criteria:
+    - Achieve production-grade performance and reliability
+    - Optimize for edge and cloud deployment
+    - Ensure scalability and maintainability
+    - Support industrial AI best practices
+    key_metrics:
+    - performance_optimization
+    - deployment_success
+    - scalability_score
+    - best_practices_compliance
+    target_scores:
+      performance_optimization: 0.9
+      deployment_success: 0.95
+      scalability_score: 0.85
+      best_practices_compliance: 0.9

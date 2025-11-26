@@ -1,0 +1,88 @@
+# Agent Color Configuration
+# Defines color schemes for different agent categories
+
+agent_colors:
+  # Research Agents - 蓝色系 (探索、知识、深度思考)
+  research:
+    color: blue
+    hex: "#0066CC"
+    ansi: "\033[94m"
+    ansi_bold: "\033[1;94m"
+    ansi_reset: "\033[0m"
+    emoji: "📚"
+    description: "Academic research and literature analysis"
+    agents:@
+      - research-academic
+      - research-literature
+      - research-knowledge-graph
+      - research-semantic-scholar
+      - research-gap-identifier
+      - research-hypothesis
+      - research-trends
+  
+  # Writer Agents - 绿色系 (创作、成长、产出)
+  writer:
+    color: green
+    hex: "#00AA00"
+    ansi: "\033[92m"
+    ansi_bold: "\033[1;92m"
+    ansi_reset: "\033[0m"
+    emoji: "✍️"
+    description: "Paper writing and content creation"
+    agents:
+      - writer-intro-cluster
+      - writer-method-cluster
+      - writer-results-cluster
+      - writer-discussion-cluster
+      - writer-format-cluster
+      - writer-cache-manager
+      - writer-quality-controller
+      - writer-style-formatter
+  
+  # Coder Agents - 橙色系 (执行、优化、技术)
+  coder:
+    color: orange
+    hex: "#FF8800"
+    ansi: "\033[93m"
+    ansi_bold: "\033[1;93m"
+    ansi_reset: "\033[0m"
+    emoji: "💻"
+    description: "Code development and optimization"
+    agents:
+      - coder-reviewer
+      - coder-debugger
+      - coder-industrial-ai
+
+# Color themes for different contexts
+themes:
+  console:
+    background: dark
+    text_color: white
+    accent_colors: ["blue", "green", "orange"]
+  
+  web:
+    background: light
+    text_color: "#333333"
+    accent_colors: ["#0066CC", "#00AA00", "#FF8800"]
+
+# Usage examples
+examples:
+  terminal_display:
+    format: "{emoji} {ansi_bold}{name}{ansi_reset} - {description}"
+  
+  markdown_display:
+    format: "{emoji} **{name}** - {description}"
+  
+  html_display:
+    format: '<span style="color: {hex}">{emoji} <strong>{name}</strong></span> - {description}'
+
+# Agent count by category
+statistics:
+  total_agents: 18
+  research_agents: 7
+  writer_agents: 8
+  coder_agents: 3
+
+# Version info
+version: "1.0.0"
+last_updated: "2025-01-01"

@@ -1,0 +1,114 @@
+{
+  "model": {
+    "name": "opus-4.1"
+  },
+  "project": {
+    "name": "UXFD - Unified Explainable Fault Diagnosis",
+    "description": "Machine learning research platform for fault diagnosis with comprehensive academic writing capabilities",
+    "version": "2.0.0",
+    "domain": "machine_learning",
+    "specialization": "fault_diagnosis"
+  },
+  "features": {
+    "cache": {
+      "enabled": true,
+      "auto_start": true,
+      "base_path": ".claude/cache",
+      "cleanup_days": 30,
+      "max_file_size_mb": 100
+    },
+    "agents": {
+      "enabled": true,
+      "auto_detect": true,
+      "performance_tracking": true
+    },
+    "logging": {
+      "enabled": true,
+      "level": "INFO",
+      "detailed_performance": true
+    }
+  },
+  "hooks": {
+    "pre_execute": {
+      "enabled": true,
+      "script": ".claude/hooks/pre-execute.py",
+      "cache_integration": true
+    },
+    "post_execute": {
+      "enabled": true,
+      "script": ".claude/hooks/post-execute.py",
+      "cache_integration": true
+    },
+    "auto_cache": {
+      "enabled": true,
+      "script": ".claude/hooks/auto-cache.sh",
+      "auto_start": true
+    }
+  },
+  "cache_system": {
+    "types": ["thinking", "research", "agent", "conversations"],
+    "search_enabled": true,
+    "export_formats": ["json", "markdown"],
+    "compression": false,
+    "backup_enabled": true,
+    "save_markdown": true,
+    "conversation_logs": true,
+    "preserve_formatting": true,
+    "unicode_friendly": true
+  },
+  "research_config": {
+    "literature_sources": ["semantic_scholar", "pubmed", "arxiv"],
+    "default_search_limit": 100,
+    "citation_style": "apa",
+    "knowledge_graph_enabled": true
+  },
+  "writing_config": {
+    "default_format": "nature",
+    "auto_citation": true,
+    "quality_check": true,
+    "style_enforcement": true
+  },
+  "performance": {
+    "parallel_processing": true,
+    "cache_optimization": true,
+    "memory_management": "auto"
+  },
+  "output_style": {
+    "enabled": true,
+    "style": "nature-expert-planner",
+    "path": ".claude/output-styles/nature-expert-planner.md",
+    "enforce_planning": true
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/capture_prompt.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/capture_response.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/capture_tools.py"
+          }
+        ]
+      }
+    ]
+  }
+}
