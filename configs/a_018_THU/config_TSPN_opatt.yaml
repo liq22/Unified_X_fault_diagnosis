@@ -1,0 +1,72 @@
+# TSPN with Operator Attention Configuration
+# This configuration enables the Operator Attention mechanism in TSPN
+# Based on the theory from Paper/TII_operator_attention/
+
+signal_processing_configs:
+  # Note: These configs are ignored when using Operator Attention
+  # as it dynamically manages the operator selection
+  layer1: ['FFT','HT','WF','I']
+  layer2: ['FFT','HT','WF','I']
+  layer3: ['FFT','HT','WF','I']
+  layer4: ['FFT','HT','WF','I']
+
+feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMean', 'Kurtosis', 'RMS', 'CrestFactor','Skewness', 'ClearanceFactor', 'ShapeFactor']
+
+args:
+
+  device: cuda
+  data_dir: '/home/user/data/a_bearing/a_018_THU24_pro/'
+  dataset_task: THU_018_basic
+  target: 'IF'
+  k_shot: 64
+
+# Model configuration
+  model: TSPN_OperatorAttention  # Use the Operator Attention variant
+  skip_connection: true
+  num_classes: 5
+  in_dim : 4096
+  out_dim : 4096
+  in_channels : 2
+  out_channels : 3
+  scale : 4
+
+  # Enable Operator Attention
+  use_operator_attention: true
+
+  # Operator Attention specific configuration
+  operator_attention:
+    embed_dim: 64              # Dimension of operator embeddings
+    hidden_dim: 128            # Hidden dimension of gate network
+    temperature: 1.0           # Temperature parameter for attention distribution
+    sparse_regularization: 0.01 # L1 sparsity regularization weight
+    enabled_operators: ['FFT', 'HT', 'WF', 'I']  # Available operators
+
+  # Wavelet filter parameters (for WF operator)
+  f_c_mu: 0
+  f_c_sigma: 0.1
+  f_b_mu: 0
+  f_b_sigma: 0.1
+
+# Training hyperparameters
+  learning_rate: 0.001
+  batch_size: 64
+  num_epochs: 300
+  weight_decay: 0.0001
+  num_workers: 32
+  seed: 17
+
+# Training configuration
+  monitor: 'val_loss'
+  patience: 200
+  gpus: 1
+  weight_decay: 0.0001
+  l1_norm: 0.0001
+
+  # Regularization parameters
+  pruning: None
+  snr: 0
+
+  # Additional loss weights
+  loss_weights:
+    task_loss: 1.0
+    attention_sparsity_loss: 0.01

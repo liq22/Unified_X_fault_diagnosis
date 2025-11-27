@@ -1,0 +1,44 @@
+# 统一基线实验配置模板
+# 所有方法和模型都将使用相同的数据集和实验设置，确保公平对比
+
+###################### data ##################
+args:
+  device: cuda
+  data_dir: '/home/user/data/a_bearing/a_018_THU24_pro/'
+  dataset_task: THU_018_basic
+  target: 'IF'
+  k_shot: 64
+
+# 通用模型参数
+  num_classes: 5  # THU_018_basic has 5 classes
+  in_dim: 4096
+  out_dim: 4096
+  in_channels: 2
+  out_channels: 3
+  scale: 4
+
+# 频率参数
+  f_c_mu: 0
+  f_c_sigma: 0.1
+  f_b_mu: 0
+  f_b_sigma: 0.1
+
+# 训练超参数
+  learning_rate: 0.001
+  batch_size: 64
+  num_epochs: 100  # 统一训练轮数
+  weight_decay: 0.0001
+  num_workers: 8  # 降低worker数量避免内存问题
+  seed: 17
+
+# 训练设置
+  monitor: 'val_loss'
+  patience: 15  # 早停耐心值
+  gpus: 1
+  l1_norm: 0.001
+  pruning: None
+  snr: 0
+
+# 实验标识
+  experiment_type: 'unified_baseline'
+  description: '统一基线实验，对比所有方法与基线模型性能'

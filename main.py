@@ -2,10 +2,14 @@
 
 ############# config##########
 import argparse
-from model.TSPN import Transparent_Signal_Processing_Network 
+from model.TSPN import Transparent_Signal_Processing_Network
 from model.TSPN_KAN import Transparent_Signal_Processing_KAN
 from model.NNSPN import NN_Signal_Processing_Network
 from model.TFON import Time_Frequency_Operator_Network
+from model.Fusion1D2D import Fusion1D2D
+from model.MoE import MoE
+from model.operator_attention import OperatorAttentionNetwork
+from model.FuzzyLogic import FuzzyLogicNetwork
 from trainer.trainer_basic import Basic_plmodel
 from trainer.trainer_set import trainer_set
 from trainer.utils import load_best_model_checkpoint
@@ -46,6 +50,10 @@ if __name__ == '__main__':
             'TKAN': lambda args: Transparent_Signal_Processing_KAN(signal_processing_modules, feature_extractor_modules,args),
             'NNSPN': lambda args: NN_Signal_Processing_Network(signal_processing_modules, feature_extractor_modules,args),
             'TFON': lambda args: Time_Frequency_Operator_Network(signal_processing_modules, feature_extractor_modules,args),
+            'Fusion1D2D': lambda args: Fusion1D2D(signal_processing_modules, feature_extractor_modules,args),
+            'MoE': lambda args: MoE(signal_processing_modules, feature_extractor_modules,args),
+            'OperatorAttention': lambda args: OperatorAttentionNetwork(signal_processing_modules, feature_extractor_modules,args),
+            'FuzzyLogic': lambda args: FuzzyLogicNetwork(signal_processing_modules, feature_extractor_modules,args),
         }
 
         model_plain = MODEL_DICT[args.model](args)

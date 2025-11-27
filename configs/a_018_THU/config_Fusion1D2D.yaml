@@ -1,0 +1,178 @@
+# 1D-2D Fusion Model Configuration for THU_018 Dataset
+
+############### model_config ####################
+
+# Signal processing (minimal for deep learning approach)
+signal_processing_configs:
+  layer1: ['I']  # Identity - let deep learning handle feature extraction
+  layer2: ['I']
+  layer3: ['I']
+  layer4: ['I']
+
+# Feature extraction (optional - can be empty for pure deep learning)
+feature_extractor_configs: []  # Use deep learning features only
+
+############### Fusion Model Configuration ###############
+
+model: Fusion1D2D
+fusion_type: 'early'  # 'early' or 'aligned'
+input_dim: 4096
+spectrogram_size: [128, 128]  # Height, Width for STFT spectrogram
+hidden_dim: 128
+dropout: 0.2
+alignment_weight: 0.1  # Only used for aligned fusion
+
+############### Data Configuration ####################
+
+args:
+  # Device configuration
+  device: cuda
+
+  # Data configuration
+  data_dir: 'C:/Users/CCSLab/Desktop/lixuan/TON/'  # Update this path
+  dataset_task: THU_018_basic
+  target: 'IF'  # Inner Fault
+  k_shot: 64
+
+  # Model parameters
+  num_classes: 5  # THU_018_basic has 5 fault classes
+  model: Fusion1D2D
+  skip_connection: false  # Not applicable for fusion model
+
+  # Training hyperparameters
+  learning_rate: 0.001
+  batch_size: 32
+  num_epochs: 30
+  weight_decay: 0.0001
+  num_workers: 8
+  seed: 42
+
+  # Training configuration
+  monitor: 'val_loss'
+  patience: 10
+  gpus: 1
+
+  # Regularization
+  l1_norm: 0.01  # Apply L1 regularization
+  snr: null  # No noise injection by default
+
+  # Model-specific parameters
+  dropout: 0.2
+  hidden_dim: 128
+  fusion_type: 'early'  # 'early' or 'aligned'
+
+  # Spectrogram parameters
+  n_fft: 256
+  hop_length: 64
+  win_length: 256
+
+  # Experiment tracking
+  project_name: 'Fusion1D2D_Experiment'
+  experiment_name: 'THU_018_IF_EarlyFusion'
+
+############### Training Configuration ####################
+
+# Optimizer settings
+optimizer:
+  type: 'adam'
+  lr: 0.001
+  weight_decay: 0.0001
+
+# Learning rate scheduler
+scheduler:
+  type: 'reduce_on_plateau'
+  factor: 0.5
+  patience: 5
+  min_lr: 1e-6
+
+# Early stopping
+early_stopping:
+  monitor: 'val_loss'
+  patience: 10
+  mode: 'min'
+
+############### Evaluation Configuration ####################
+
+# Metrics to compute
+metrics:
+  - 'accuracy'
+  - 'precision'
+  - 'recall'
+  - 'f1_score'
+  - 'confusion_matrix'
+
+# Cross-validation settings
+cross_validation:
+  enabled: false
+  folds: 5
+
+############### Explainability Configuration ####################
+
+explainability:
+  enabled: true
+  methods:
+    - 'signal_path'      # Intrinsic explanation
+    - 'integrated_gradients'  # Post-hoc explanation
+    - 'grad_cam'         # Gradient-based visualization
+
+  # Explanation targets
+  target_classes: null  # All classes
+
+  # Visualization settings
+  visualization:
+    save_plots: true
+    plot_format: 'png'
+    figsize: [12, 8]
+
+  # Analysis settings
+  analysis:
+    branch_contribution: true  # Analyze 1D vs 2D branch contributions
+    feature_importance: true
+    decision_boundary: false
+
+############### Comparison Experiment Configuration ####################
+
+# Baseline models for comparison
+baseline_comparison:
+  enabled: true
+  models:
+    - 'TSPN'
+    - 'ResNet'
+    - 'SincNet'
+    - 'NNSPN'
+
+  # Comparison metrics
+  metrics:
+    - 'accuracy'
+    - 'f1_macro'
+    - 'training_time'
+    - 'inference_time'
+    - 'model_size'
+    - 'explainability_score'
+
+############### Logging and Saving ####################
+
+# Wandb configuration
+wandb:
+  enabled: true
+  project: 'Fusion1D2D_Experiments'
+  entity: null  # Use default
+  tags:
+    - '1D-2D_fusion'
+    - 'fault_diagnosis'
+    - 'THU_018'
+    - 'explainable_ai'
+
+# Model checkpointing
+checkpoint:
+  monitor: 'val_loss'
+  mode: 'min'
+  save_top_k: 3
+  save_last: true
+
+# Result saving
+results:
+  save_model: true
+  save_predictions: true
+  save_explanations: true
+  output_dir: 'results/Fusion1D2D/'

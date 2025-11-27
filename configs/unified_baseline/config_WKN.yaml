@@ -1,0 +1,35 @@
+# WKN - 小波核网络基线模型
+args:
+  model: 'WKN_m'
+  skip_connection: true
+  scale: 16
+  l1_norm: 0.01
+  num_epochs: 100
+  patience: 15
+  gpus: 1
+
+  # 继承模板中的其他参数
+  device: cuda
+  data_dir: '/home/user/data/a_bearing/a_018_THU24_pro/'
+  dataset_task: THU_018_basic
+  target: 'IF'
+  k_shot: 64
+  num_classes: 5
+  in_dim: 4096
+  out_dim: 4096
+  in_channels: 2
+  out_channels: 3
+  f_c_mu: 0
+  f_c_sigma: 0.1
+  f_b_mu: 0
+  f_b_sigma: 0.1
+  learning_rate: 0.001
+  batch_size: 64
+  weight_decay: 0.0001
+  num_workers: 8
+  seed: 17
+  monitor: 'val_loss'
+  pruning: None
+  snr: 0
+  experiment_type: 'unified_baseline'
+  description: 'WKN小波核网络统一基线实验'

@@ -1,0 +1,105 @@
+# MoE Model Configuration File
+
+args:
+  # Basic model parameters
+  num_classes: 10
+  feature_dim: 64
+  in_dim: 4096
+  out_dim: 64
+
+  # MoE specific parameters
+  num_experts: 3
+  routing_temperature: 1.0
+  use_load_balance: true
+  use_sparsity: true
+
+  # Training parameters
+  batch_size: 32
+  epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  dropout_rate: 0.1
+
+  # Data parameters
+  data_dir: "/home/user/LQ/B_Signal/Unified_X_fault_diagnosis/data"
+  dataset_task: "THU_018_basic"
+  target: "IF"  # Inner Fault
+  sample_rate: 12000
+
+  # Signal processing
+  signal_length: 4096
+  normalize: true
+
+  # Regularization
+  l1_norm: 0.001
+  pruning: 0.1
+
+  # Explainability
+  enable_explanations: true
+  save_attention_maps: true
+  save_routing_weights: true
+
+# Expert configurations
+experts:
+  low_frequency:
+    enabled: true
+    cutoff_freq: 500.0
+    feature_dim: 64
+    target_faults: ["转子不平衡", "基础振动", "低频机械松动"]
+
+  harmonic:
+    enabled: true
+    feature_dim: 64
+    target_faults: ["齿轮故障", "滚动体故障", "轴承磨损"]
+
+  envelope:
+    enabled: true
+    feature_dim: 64
+    target_faults: ["外圈故障", "内圈故障", "冲击故障"]
+
+# Router configuration
+router:
+  type: "StatisticalRouter"
+  temperature: 1.0
+  load_balance_weight: 0.1
+  sparsity_weight: 0.01
+
+# Training configuration
+training:
+  monitor: "val_loss"
+  patience: 20
+  min_delta: 0.001
+
+# Logging and checkpointing
+logging:
+  use_wandb: true
+  project_name: "MoE_Fault_Diagnosis"
+  log_frequency: 10
+
+checkpointing:
+  save_top_k: 3
+  monitor: "val_accuracy"
+  mode: "max"
+
+# Data augmentation
+augmentation:
+  enabled: false
+  noise_level: 0.01
+  time_shift: 0.1
+  amplitude_scale: 0.1
+
+# Evaluation configuration
+evaluation:
+  test_frequency: 10
+  save_predictions: true
+  compute_confusion_matrix: true
+  compute_classification_report: true
+
+# Explainability analysis
+explainability:
+  enabled: true
+  save_analysis: true
+  analysis_frequency: 20
+  visualize_routing: true
+  visualize_attention: true
+  feature_importance: true
