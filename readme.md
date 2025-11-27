@@ -122,9 +122,11 @@ DATASET_TASK_CLASS = {
 │   ├── THU_018/
 │   └── ...                      # 更多配置文件
 ├── data
-│   ├── data_provider.py
-│   ├── datasets.py
-│   └── utils.py
+│   ├── vbench_dataset.py       # 推荐使用的数据集封装（VBench 风格统一接口）
+│   ├── vbench_utils.py         # 与 VBench 数据/评估相关的辅助工具
+│   ├── data_provider.py        # 旧版数据接口（逐步迁移中）
+│   ├── datasets.py             # 旧版数据集定义（逐步迁移中）
+│   └── utils.py                # 通用数据工具函数
 ├── main.py                      # 主程序入口
 ├── main_ablation_exp.py         # 消融实验，网格学习率
 ├── main_com.py                  # 对比方法

@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/home/user/LQ/B_Signal/Unified_X_fault_diagnosis/main.py", line 10, in <module>
+    from trainer.trainer_set import trainer_set
+  File "/home/user/LQ/B_Signal/Unified_X_fault_diagnosis/trainer/trainer_set.py", line 1, in <module>
+    import accelerate
+ModuleNotFoundError: No module named 'accelerate'

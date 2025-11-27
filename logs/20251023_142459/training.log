@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/home/user/LQ/B_Signal/Unified_X_fault_diagnosis/main.py", line 15, in <module>
+    from configs.config import parse_arguments,config_network
+  File "/home/user/LQ/B_Signal/Unified_X_fault_diagnosis/configs/config.py", line 3, in <module>
+    from altair import AllSortString
+ModuleNotFoundError: No module named 'altair'
