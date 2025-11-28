@@ -1,0 +1,84 @@
+# Configuration for 1D-Grad-CAM Explainable Fault Diagnosis Model
+
+# Dataset configuration
+data_dir: /home/user/data/PHMbenchdata/PHM-Vibench/THU_018
+dataset_task: THU_018_basic
+target: IF  # Inner Fault
+seq_length: 4096
+sampling_rate: 20480
+
+# Model configuration
+model:
+  name: GradCAM_XFD
+  type: explainable
+  input_channels: 1
+  num_classes: 10
+  seq_length: 4096
+  dropout: 0.2
+  grad_cam_layer: conv3  # Target layer for Grad-CAM visualization
+
+# Training configuration
+training:
+  batch_size: 32
+  epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  optimizer: adam
+  scheduler: step
+  step_size: 30
+  gamma: 0.1
+  early_stopping:
+    patience: 20
+    monitor: val_loss
+    mode: min
+
+# Data augmentation
+augmentation:
+  enabled: true
+  noise_factor: 0.05
+  time_shift: 0.1
+  amplitude_scale: 0.2
+
+# Explainability configuration
+explainability:
+  enabled: true
+  save_explanations: true
+  visualization:
+    enabled: true
+    save_plots: true
+    format: png  # png, pdf, svg
+  metrics:
+    - attention_alignment
+    - feature_importance
+    - localization_accuracy
+
+# Logging and saving
+logging:
+  save_dir: save/GradCAM_XFD
+  experiment_name: grad_cam_xfd_experiment
+  wandb:
+    enabled: true
+    project: UXFD_GradCAM
+    tags: ["explainable", "grad-cam", "fault_diagnosis"]
+
+# Evaluation
+evaluation:
+  test_batch_size: 64
+  metrics:
+    - accuracy
+    - f1_score
+    - precision
+    - recall
+    - confusion_matrix
+  explainability_test:
+    num_samples: 100
+    generate_report: true
+
+# Hardware configuration
+device: auto  # auto, cpu, cuda
+gpus: 1
+num_workers: 4
+pin_memory: true
+
+# Random seed
+seed: 42

@@ -1,0 +1,118 @@
+# Configuration for Physics-informed Probabilistic Deep Network
+
+# Dataset configuration
+data_dir: /home/user/data/PHMbenchdata/PHM-Vibench/THU_018
+dataset_task: THU_018_basic
+target: IF  # Inner Fault
+seq_length: 4096
+sampling_rate: 20480
+
+# Model configuration
+model:
+  name: Physics_informed_PDN
+  type: explainable
+  input_dim: 4096
+  num_classes: 10
+  hidden_dim: 128
+  num_samples: 10  # Monte Carlo samples for uncertainty
+
+# Physics parameters
+physics:
+  enabled: true
+  resonance_freq: 100.0  # Hz
+  damping_ratio: 0.1
+  freq_range: [0, 1000]  # Hz
+  frequency_domain: true
+  physics_weight: 1.0
+  statistical_features:
+    enabled: true
+    features: [mean, std, rms, kurtosis, skewness, peak, crest_factor, clearance_factor]
+
+# Training configuration
+training:
+  batch_size: 32
+  epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  optimizer: adam
+  scheduler: cosine
+  min_lr: 0.00001
+  early_stopping:
+    patience: 20
+    monitor: val_loss
+    mode: min
+
+  # Uncertainty regularization
+  uncertainty:
+    enabled: true
+    regularization_weight: 0.01
+    uncertainty_threshold: 0.3
+    confidence_weighting: true
+
+# Data configuration
+data:
+  preprocessing:
+    - bandpass_filter
+    - normalization
+  bandpass_filter:
+    low_freq: 10  # Hz
+    high_freq: 2000  # Hz
+  normalization:
+    method: z_score
+  augmentation:
+    enabled: true
+    noise_factor: 0.02
+
+# Explainability configuration
+explainability:
+  enabled: true
+  uncertainty_quantification: true
+  visualization:
+    enabled: true
+    save_plots: true
+    plot_uncertainty_bands: true
+  analysis:
+    feature_importance: true
+    physics_consistency: true
+    reliability_assessment: true
+  metrics:
+    - prediction_uncertainty
+    - calibration_error
+    - reliability_score
+    - physics_violation_rate
+
+# Logging and saving
+logging:
+  save_dir: save/Physics_PDN
+  experiment_name: physics_pdn_experiment
+  wandb:
+    enabled: true
+    project: UXFD_Physics_PDN
+    tags: ["explainable", "physics_informed", "uncertainty", "fault_diagnosis"]
+
+# Evaluation
+evaluation:
+  test_batch_size: 64
+  metrics:
+    - accuracy
+    - f1_score
+    - precision
+    - recall
+    - confusion_matrix
+  uncertainty_metrics:
+    - expected_calibration_error
+    - brier_score
+    - uncertainty_calibration
+  reliability:
+    enabled: true
+    confidence_thresholds: [0.5, 0.7, 0.9]
+    high_confidence_accuracy: true
+
+# Hardware configuration
+device: auto
+gpus: 1
+num_workers: 4
+pin_memory: true
+
+# Random seed
+seed: 42

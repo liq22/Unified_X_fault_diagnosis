@@ -1,0 +1,102 @@
+# Configuration for CI-GNN (Granger Causality Graph Neural Network)
+
+# Dataset configuration
+data_dir: /home/user/data/PHMbenchdata/PHM-Vibench/THU_018
+dataset_task: THU_018_basic
+target: IF  # Inner Fault
+seq_length: 4096
+sampling_rate: 20480
+
+# Model configuration
+model:
+  name: CI_GNN
+  type: explainable
+  num_sensors: 8  # Virtual sensors from single input
+  num_classes: 10
+  hidden_dim: 128
+  num_layers: 3
+  dropout: 0.2
+  gnn_type: mixed  # GCN + GAT
+  attention_heads: 4
+
+# Causality configuration
+causality:
+  enabled: true
+  learnable_adjacency: true
+  sparsity regularization: 0.01
+  self_loops: false
+  causality_threshold: 0.1  # Threshold for causal relationship
+
+# Training configuration
+training:
+  batch_size: 32
+  epochs: 100
+  learning_rate:
+    causality_layer: 0.001
+    gnn_layers: 0.01
+    classifier: 0.01
+  weight_decay: 0.0001
+  optimizer: adam
+  scheduler: reduce_on_plateau
+  patience: 10
+  factor: 0.5
+  early_stopping:
+    patience: 20
+    monitor: val_acc
+    mode: max
+
+# Data configuration
+data:
+  sensor_fusion: true
+  multi_sensor_strategy: split  # split, duplicate, interpolation
+  normalization: z_score
+  temporal_window: 10
+
+# Explainability configuration
+explainability:
+  enabled: true
+  save_causal_graph: true
+  visualization:
+    enabled: true
+    save_plots: true
+    formats: [png, pdf]
+  analysis:
+    causal_path_analysis: true
+    sensor_importance_ranking: true
+    layer_contribution_analysis: true
+  metrics:
+    - causal_interpretability
+    - graph_sparsity
+    - sensor_contribution
+
+# Logging and saving
+logging:
+  save_dir: save/CI_GNN
+  experiment_name: ci_gnn_experiment
+  wandb:
+    enabled: true
+    project: UXFD_CI_GNN
+    tags: ["explainable", "gnn", "causality", "fault_diagnosis"]
+
+# Evaluation
+evaluation:
+  test_batch_size: 64
+  metrics:
+    - accuracy
+    - f1_score
+    - precision
+    - recall
+    - confusion_matrix
+  causal_analysis:
+    enabled: true
+    compare_with_ground_truth: false
+    top_k_paths: 5
+
+# Hardware configuration
+device: auto
+gpus: 1
+num_workers: 4
+pin_memory: true
+
+# Random seed
+seed: 42
