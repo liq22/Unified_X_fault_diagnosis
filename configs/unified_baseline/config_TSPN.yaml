@@ -12,6 +12,8 @@ args:
   skip_connection: true
   scale: 4
   l1_norm: 0.0001
+  gradient_clip_val: 1.0
+  gradient_clip_algorithm: 'norm'
   num_epochs: 100
   patience: 15
   gpus: 1

@@ -11,9 +11,12 @@ import torch.nn.functional as F
 from typing import Dict, Any, Optional, Tuple, List
 import numpy as np
 
-from .Signal_processing import SignalProcessingModule
+# 简化导入，使用现有的基础类
+from .Signal_processing import (
+    SignalProcessingBase, SignalProcessingModuleDict,
+    FFTSignalProcessing, HilbertTransform, WaveFilters, Identity
+)
 from .Feature_extract import FeatureExtractor
-from .explainable_base import ExplainableModelMixin
 
 
 class OneDBranch(nn.Module):
@@ -29,45 +32,33 @@ class OneDBranch(nn.Module):
 
         self.layers = nn.ModuleList()
 
-        # Build convolutional layers
+        # Build layers
         for i in range(num_layers):
-            if i == 0:
-                self.layers.append(
-                    nn.Conv1d(in_channels, out_channels, kernel_size=3, padding=1)
-                )
-            else:
-                self.layers.append(
-                    nn.Conv1d(out_channels, out_channels, kernel_size=3, padding=1)
-                )
-
-            # Add batch normalization and activation
+            in_ch = in_channels if i == 0 else out_channels
+            self.layers.append(
+                nn.Conv1d(in_ch, out_channels, kernel_size=3, padding=1)
+            )
             self.layers.append(nn.BatchNorm1d(out_channels))
             self.layers.append(nn.ReLU(inplace=True))
             self.layers.append(nn.Dropout(dropout))
 
-        # Global average pooling
-        self.global_pool = nn.AdaptiveAvgPool1d(1)
+            # Add max pooling after first two layers
+            if i < 2:
+                self.layers.append(nn.MaxPool1d(kernel_size=2, stride=2))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Forward pass for 1D branch
 
         Args:
-            x: Input tensor of shape (batch_size, seq_len) or (batch_size, 1, seq_len)
+            x: Input tensor of shape (batch_size, channels, seq_len)
 
         Returns:
-            Features of shape (batch_size, out_channels)
+            Features of shape (batch_size, out_channels, reduced_seq_len)
         """
-        if x.dim() == 2:
-            x = x.unsqueeze(1)  # (batch_size, 1, seq_len)
-
         # Apply layers
         for layer in self.layers:
             x = layer(x)
-
-        # Global average pooling
-        x = self.global_pool(x)  # (batch_size, out_channels, 1)
-        x = x.squeeze(-1)  # (batch_size, out_channels)
 
         return x
 
@@ -76,23 +67,20 @@ class TwoDBranch(nn.Module):
     """2D branch for spectrogram feature extraction"""
 
     def __init__(self,
-                 input_shape: Tuple[int, int, int] = (1, 128, 128),
-                 base_channels: int = 32,
+                 input_dim: int = 4096,
+                 in_channels: int = 1,
+                 out_channels: int = 64,
                  num_layers: int = 3,
                  dropout: float = 0.2):
         super(TwoDBranch, self).__init__()
 
-        self.input_shape = input_shape
-
-        # Build convolutional layers
         self.layers = nn.ModuleList()
-        in_channels = input_shape[0]
 
+        # Build layers
         for i in range(num_layers):
-            out_channels = base_channels * (2 ** i)
-
+            in_ch = in_channels if i == 0 else out_channels
             self.layers.append(
-                nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1)
+                nn.Conv2d(in_ch, out_channels, kernel_size=3, padding=1)
             )
             self.layers.append(nn.BatchNorm2d(out_channels))
             self.layers.append(nn.ReLU(inplace=True))
@@ -189,7 +177,7 @@ def create_spectrogram_from_1d(signal: torch.Tensor,
     return result
 
 
-class Fusion1D2D(nn.Module, ExplainableModelMixin):
+class Fusion1D2D(nn.Module):
     """
     1D-2D Fusion Model for explainable fault diagnosis
 
@@ -199,291 +187,136 @@ class Fusion1D2D(nn.Module, ExplainableModelMixin):
     """
 
     def __init__(self,
-                 input_dim: int = 4096,
-                 spectrogram_size: Tuple[int, int] = (128, 128),
-                 num_classes: int = 10,
-                 hidden_dim: int = 128,
-                 dropout: float = 0.2,
-                 fusion_type: str = 'early',
-                 signal_processing: Optional[List[str]] = None,
-                 feature_extraction: Optional[List[str]] = None):
+                 signal_processing_modules: Dict,
+                 feature_extractor_modules: Dict,
+                 args: Any):
         """
-        Initialize 1D-2D Fusion model
+        Initialize Fusion1D2D model
 
         Args:
-            input_dim: Input sequence dimension
-            spectrogram_size: Target spectrogram size (height, width)
-            num_classes: Number of fault classes
-            hidden_dim: Hidden dimension for fusion layers
-            dropout: Dropout rate
-            fusion_type: Fusion strategy ('early', 'aligned')
-            signal_processing: Signal processing operations
-            feature_extraction: Feature extraction methods
+            signal_processing_modules: Signal processing modules configuration
+            feature_extractor_modules: Feature extractor modules configuration
+            args: Arguments containing model hyperparameters
         """
         super(Fusion1D2D, self).__init__()
 
-        self.input_dim = input_dim
-        self.spectrogram_size = spectrogram_size
-        self.num_classes = num_classes
-        self.hidden_dim = hidden_dim
-        self.fusion_type = fusion_type
+        # Extract parameters from args
+        self.input_dim = getattr(args, 'in_dim', 4096)
+        self.in_channels = getattr(args, 'in_channels', 2)
+        self.out_channels = getattr(args, 'out_channels', 3)
+        self.scale = getattr(args, 'scale', 4)
+        self.num_classes = getattr(args, 'num_classes', 5)
+        self.skip_connection = getattr(args, 'skip_connection', True)
 
-        # Initialize signal processing and feature extraction
-        if signal_processing is None:
-            signal_processing = ['I']  # Identity for direct processing
-        if feature_extraction is None:
-            feature_extraction = []  # Use deep learning features only
+        # Signal processing layers (using TSPN's signal processing)
+        from .TSPN import SignalProcessingLayer
 
-        self.signal_processing = signal_processing
-        self.feature_extraction = feature_extraction
+        self.signal_processing_layers = nn.ModuleList()
+        for i in range(4):
+            layer_config = getattr(args, f'layer{i+1}', ['I', 'WF', 'I'])
+            # 使用与 TSPN 一致的接口：SignalProcessingModuleDict 需要传入字典，
+            # 各算子模块接收完整的 args 以保持配置与设备信息一致
+            module_dict = SignalProcessingModuleDict({})
+
+            # Map config strings to actual modules
+            for module_name in layer_config:
+                if module_name == 'I':
+                    module_dict[module_name] = Identity(args)
+                elif module_name == 'WF':
+                    module_dict[module_name] = WaveFilters(args)
+                elif module_name == 'HT':
+                    module_dict[module_name] = HilbertTransform(args)
+                elif module_name == 'FFT':
+                    module_dict[module_name] = FFTSignalProcessing(args)
+                else:
+                    module_dict[module_name] = Identity(args)
+
+            in_ch = self.in_channels if i == 0 else self.out_channels
+            out_ch = self.out_channels
+
+            self.signal_processing_layers.append(
+                SignalProcessingLayer(module_dict, in_ch, out_ch, self.skip_connection)
+            )
+
+        # Feature extractor
+        self.feature_extractor = FeatureExtractor()
 
         # 1D branch
         self.one_d_branch = OneDBranch(
-            input_dim=input_dim,
-            in_channels=1,
+            input_dim=self.input_dim,
+            in_channels=self.out_channels,
             out_channels=64,
-            num_layers=3,
-            dropout=dropout
+            num_layers=3
         )
 
         # 2D branch
         self.two_d_branch = TwoDBranch(
-            input_shape=(1, *spectrogram_size),
-            base_channels=32,
-            num_layers=3,
-            dropout=dropout
+            input_dim=self.input_dim,
+            in_channels=1,
+            out_channels=64,
+            num_layers=3
         )
 
-        # Fusion layers
-        if fusion_type == 'early':
-            # Early fusion: concatenate 1D and 2D features
-            self.fusion_layers = nn.Sequential(
-                nn.Linear(128, hidden_dim),  # 64 (1D) + 64 (2D) = 128
-                nn.ReLU(inplace=True),
-                nn.Dropout(dropout),
-                nn.Linear(hidden_dim, hidden_dim // 2),
-                nn.ReLU(inplace=True),
-                nn.Dropout(dropout),
-                nn.Linear(hidden_dim // 2, num_classes)
-            )
-        else:
-            raise ValueError(f"Unsupported fusion type: {fusion_type}")
+        # Fusion layer
+        fusion_dim = 64 + 64  # Concatenated features from both branches
+        self.fusion_layer = nn.Sequential(
+            nn.Linear(fusion_dim, 128),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.2),
+            nn.Linear(128, 64),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.2)
+        )
+
+        # Classifier
+        self.classifier = nn.Sequential(
+            nn.Linear(64 + 13, 128),  # 64 from fusion + 13 from feature extractor
+            nn.ReLU(inplace=True),
+            nn.Linear(128, self.num_classes)
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
-        Forward pass
+        Forward pass for Fusion1D2D model
 
         Args:
-            x: Input tensor of shape (batch_size, seq_len)
+            x: Input tensor of shape (batch_size, seq_len, channels)
 
         Returns:
             Classification logits of shape (batch_size, num_classes)
         """
-        logits, _, _ = self.forward_with_features(x)
-        return logits
+        # Reshape input
+        if x.dim() == 3:
+            x = x.transpose(1, 2)  # (batch_size, channels, seq_len)
 
-    def forward_with_features(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        """
-        Forward pass with intermediate features
+        # Apply signal processing layers
+        for layer in self.signal_processing_layers:
+            x = layer(x)
 
-        Args:
-            x: Input tensor of shape (batch_size, seq_len)
+        # Store processed signal for both branches
+        processed_signal = x
 
-        Returns:
-            Tuple of (logits, features_1d, features_2d)
-        """
-        # Extract 1D features
-        features_1d = self.one_d_branch(x)
+        # 1D branch
+        one_d_features = self.one_d_branch(processed_signal)  # (batch_size, 64, reduced_seq_len)
+        one_d_features = F.adaptive_avg_pool1d(one_d_features, 1).squeeze(-1)  # (batch_size, 64)
 
-        # Create 2D spectrogram from 1D signal
-        spectrogram = create_spectrogram_from_1d(x, target_size=self.spectrogram_size)
-
-        # Extract 2D features
-        features_2d = self.two_d_branch(spectrogram)
+        # 2D branch - convert to spectrogram
+        # Use the first channel for spectrogram conversion
+        signal_1d = processed_signal[:, 0, :]  # (batch_size, seq_len)
+        spectrogram = create_spectrogram_from_1d(signal_1d)  # (batch_size, 1, height, width)
+        two_d_features = self.two_d_branch(spectrogram)  # (batch_size, 64)
 
         # Fusion
-        if self.fusion_type == 'early':
-            fused_features = torch.cat([features_1d, features_2d], dim=1)
-            logits = self.fusion_layers(fused_features)
+        fused_features = torch.cat([one_d_features, two_d_features], dim=1)  # (batch_size, 128)
+        fused_features = self.fusion_layer(fused_features)  # (batch_size, 64)
 
-        return logits, features_1d, features_2d
+        # Extract statistical features
+        statistical_features = self.feature_extractor(processed_signal)  # (batch_size, 13)
 
-    def get_embeddings(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Get fused embeddings without classification
+        # Combine all features
+        combined_features = torch.cat([fused_features, statistical_features], dim=1)  # (batch_size, 77)
 
-        Args:
-            x: Input tensor
+        # Classification
+        logits = self.classifier(combined_features)  # (batch_size, num_classes)
 
-        Returns:
-            Fused embeddings
-        """
-        features_1d = self.one_d_branch(x)
-        spectrogram = create_spectrogram_from_1d(x, target_size=self.spectrogram_size)
-        features_2d = self.two_d_branch(spectrogram)
-
-        fused_features = torch.cat([features_1d, features_2d], dim=1)
-        return fused_features
-
-    def get_signal_path(self, x: torch.Tensor) -> Dict[str, Any]:
-        """
-        Get signal processing path for explainability
-
-        Args:
-            x: Input tensor
-
-        Returns:
-            Dictionary containing signal processing information
-        """
-        with torch.no_grad():
-            # Get intermediate features
-            _, feat_1d, feat_2d = self.forward_with_features(x)
-
-            # Create spectrogram for visualization
-            spectrogram = create_spectrogram_from_1d(x, target_size=self.spectrogram_size)
-
-            path_info = {
-                'input_shape': x.shape,
-                'spectrogram_shape': spectrogram.shape,
-                'features_1d_shape': feat_1d.shape,
-                'features_2d_shape': feat_2d.shape,
-                'signal_processing': self.signal_processing,
-                'feature_extraction': self.feature_extraction,
-                'fusion_type': self.fusion_type,
-                'branch_contributions': {
-                    '1d_branch': feat_1d.detach().cpu().numpy(),
-                    '2d_branch': feat_2d.detach().cpu().numpy(),
-                    'spectrogram': spectrogram.detach().cpu().numpy()
-                }
-            }
-
-            return path_info
-
-    def get_explainability_info(self) -> Dict[str, Any]:
-        """
-        Get model explainability information
-
-        Returns:
-            Dictionary containing explainability metadata
-        """
-        return {
-            'model_type': 'Fusion1D2D',
-            'supports_signal_path': True,
-            'supports_intrinsic_explanation': True,
-            'modality': 'multimodal',
-            'input_types': ['1d_time_series', '2d_spectrogram'],
-            'explanation_methods': ['signal_path', 'integrated_gradients', 'grad_cam'],
-            'fusion_strategy': self.fusion_type,
-            'branches': {
-                '1d_branch': {
-                    'type': 'CNN_1D',
-                    'layers': len(self.one_d_branch.layers) // 4,  # Conv + BN + ReLU + Dropout
-                    'output_dim': 64
-                },
-                '2d_branch': {
-                    'type': 'CNN_2D',
-                    'layers': len(self.two_d_branch.layers) // 5 if hasattr(self.two_d_branch, 'layers') else 3,
-                    'output_dim': 64
-                }
-            }
-        }
-
-
-class AlignedFusion1D2D(Fusion1D2D):
-    """
-    Aligned 1D-2D Fusion Model with semantic alignment between branches
-    """
-
-    def __init__(self,
-                 input_dim: int = 4096,
-                 spectrogram_size: Tuple[int, int] = (128, 128),
-                 num_classes: int = 10,
-                 hidden_dim: int = 128,
-                 dropout: float = 0.2,
-                 alignment_weight: float = 0.1,
-                 **kwargs):
-        """
-        Initialize Aligned 1D-2D Fusion model
-
-        Args:
-            alignment_weight: Weight for alignment loss
-        """
-        super(AlignedFusion1D2D, self).__init__(
-            input_dim=input_dim,
-            spectrogram_size=spectrogram_size,
-            num_classes=num_classes,
-            hidden_dim=hidden_dim,
-            dropout=dropout,
-            fusion_type='aligned',
-            **kwargs
-        )
-
-        self.alignment_weight = alignment_weight
-
-        # Projection layers for alignment (project both to same space)
-        self.projection_1d = nn.Linear(64, hidden_dim)
-        self.projection_2d = nn.Linear(64, hidden_dim)
-
-        # Fusion layers for aligned features
-        self.fusion_layers = nn.Sequential(
-            nn.Linear(hidden_dim * 2, hidden_dim),  # Aligned features from both branches
-            nn.ReLU(inplace=True),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_dim, hidden_dim // 2),
-            nn.ReLU(inplace=True),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_dim // 2, num_classes)
-        )
-
-    def forward_with_features(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-        """
-        Forward pass with alignment
-
-        Returns:
-            Tuple of (logits, features_1d, features_2d, alignment_loss)
-        """
-        # Extract features from both branches
-        features_1d = self.one_d_branch(x)
-        spectrogram = create_spectrogram_from_1d(x, target_size=self.spectrogram_size)
-        features_2d = self.two_d_branch(spectrogram)
-
-        # Project features to alignment space
-        aligned_1d = self.projection_1d(features_1d)
-        aligned_2d = self.projection_2d(features_2d)
-
-        # Compute alignment loss (contrastive loss)
-        alignment_loss = self.compute_alignment_loss(aligned_1d, aligned_2d)
-
-        # Fuse aligned features
-        fused_features = torch.cat([aligned_1d, aligned_2d], dim=1)
-        logits = self.fusion_layers(fused_features)
-
-        return logits, features_1d, features_2d, alignment_loss
-
-    def compute_alignment_loss(self, feat_1d: torch.Tensor, feat_2d: torch.Tensor) -> torch.Tensor:
-        """
-        Compute alignment loss between 1D and 2D features
-
-        Args:
-            feat_1d: 1D branch features
-            feat_2d: 2D branch features
-
-        Returns:
-            Alignment loss
-        """
-        # Normalize features
-        feat_1d_norm = F.normalize(feat_1d, p=2, dim=1)
-        feat_2d_norm = F.normalize(feat_2d, p=2, dim=1)
-
-        # Compute cosine similarity
-        similarity = F.cosine_similarity(feat_1d_norm, feat_2d_norm, dim=1)
-
-        # Alignment loss: maximize similarity
-        alignment_loss = 1.0 - similarity.mean()
-
-        return alignment_loss
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Standard forward pass"""
-        logits, _, _, _ = self.forward_with_features(x)
         return logits
