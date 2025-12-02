@@ -24,6 +24,16 @@ DATASET_TASK_CLASS = {
     'VBENCH_THU': VbenchDataset,
     'VBENCH_HUST': VbenchDataset,
     'VBENCH_all': VbenchDataset,
+    # PHM-Vibench数据集支持（新增）
+    'PHM_Vibench_basic': VbenchDataset,
+    'PHM_Vibench_cwru': VbenchDataset,
+    'PHM_Vibench_xjtu': VbenchDataset,
+    'PHM_Vibench_femto': VbenchDataset,
+    'PHM_Vibench_thu': VbenchDataset,
+    'PHM_Vibench_mfpt': VbenchDataset,
+    'PHM_Vibench_unsw': VbenchDataset,
+    'PHM_Vibench_domain_adaptation': VbenchDataset,
+    'PHM_Vibench_few_shot': VbenchDataset,
 }
 
 def get_data(args):

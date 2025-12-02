@@ -11,7 +11,7 @@ args:
   model: OperatorAttention
   skip_connection: true
   scale: 4
-  l1_norm: 0.0001
+  l1_norm: 0  # 2025-12-01调整：完全移除L1正则化以解决过度稀疏化问题
   num_epochs: 100
   patience: 15
   gpus: 1

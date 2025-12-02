@@ -28,6 +28,11 @@ from model_collection.MCN.models import MCN_GFK, MultiChannel_MCN_GFK
 from model_collection.MCN.models import MCN_WFK,MultiChannel_MCN_WFK
 import pandas as pd
 import multiprocessing
+# 导入新的统一基线模型
+from model.OperatorAttention_simple import OperatorAttentionModel
+from model.FuzzyLogic_simple import FuzzyLogicNetwork
+from model.MoE_simple import MoEModel
+from model.Fusion1D2D_simple import Fusion1D2D
 if __name__ == '__main__':
     # multiprocessing.freeze_support()
     # 创建解析器
@@ -40,9 +45,12 @@ if __name__ == '__main__':
     config_dir = meta_args.config_dir
     for it in range(iteration):
         configs,args,path,name = parse_arguments(config_dir,it)
-        
-        seed_everything(args.seed + it) # 17 args.seed 
-        wandb.init(project=args.dataset_task, name=name) 
+
+        seed_everything(args.seed + it) # 17 args.seed
+        wandb.init(project=args.dataset_task, name=name)
+
+        # 构建信号处理和特征提取模块
+        signal_processing_modules, feature_extractor_modules = config_network(configs, args)
 
         ff = np.arange(0, args.in_dim//2 + 1) / args.in_dim//2 + 1
 
@@ -53,6 +61,11 @@ if __name__ == '__main__':
             'Huan_net': lambda args: Huan_net(input_size=args.in_channels, num_class=args.num_classes),
             'TFN_Morlet': lambda args: TFN_Morlet(in_channels=args.in_channels, out_channels=args.num_classes),
             'MCN_GFK': lambda args: MultiChannel_MCN_GFK(ff=ff, in_channels=args.in_channels, num_MFKs=8, num_classes=args.num_classes),
+            # 统一基线模型
+            'OperatorAttention': lambda args: OperatorAttentionModel(signal_processing_modules, feature_extractor_modules, args),
+            'FuzzyLogic': lambda args: FuzzyLogicNetwork(signal_processing_modules, feature_extractor_modules, args),
+            'MoE_simple': lambda args: MoEModel(args),
+            'Fusion1D2D': lambda args: Fusion1D2D(args),
         }
 
         # 初始化模型

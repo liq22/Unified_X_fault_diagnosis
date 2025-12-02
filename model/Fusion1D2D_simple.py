@@ -67,9 +67,9 @@ class Fusion1D2D(nn.Module):
 
         self.feature_extractor = simple_feature_extractor
 
-        # 1D branch
+        # 1D branch - use in_channels for consistency with reshape
         self.one_d_branch = nn.Sequential(
-            nn.Conv1d(self.out_channels, 64, kernel_size=3, padding=1),
+            nn.Conv1d(self.in_channels, 64, kernel_size=3, padding=1),
             nn.BatchNorm1d(64),
             nn.ReLU(inplace=True),
             nn.Dropout(0.2),
@@ -114,7 +114,8 @@ class Fusion1D2D(nn.Module):
         )
 
         # Fusion and classification
-        fusion_dim = 64 + 64 + self.out_channels * 5  # 1D + 2D + statistical features
+        # Use in_channels for statistical features to match the reshape logic
+        fusion_dim = 64 + 64 + self.in_channels * 5  # 1D + 2D + statistical features
         self.classifier = nn.Sequential(
             nn.Linear(fusion_dim, 128),
             nn.ReLU(inplace=True),
@@ -141,15 +142,28 @@ class Fusion1D2D(nn.Module):
             x = layer(x)
 
         # Reshape back to (batch_size, channels, seq_len) for CNN
-        # Assume we want the original channels and a reasonable sequence length
-        target_seq_len = 1024  # You can adjust this
-        x = x.view(x.size(0), self.out_channels, -1)
+        # Dynamically calculate sequence length to ensure compatibility
+        batch_size = x.size(0)
+        total_features = x.size(1)
 
-        # If too long, truncate or interpolate
-        if x.size(-1) > target_seq_len:
-            x = x[:, :, :target_seq_len]
-        elif x.size(-1) < target_seq_len:
-            x = F.interpolate(x, size=target_seq_len, mode='linear', align_corners=False)
+        # Use in_channels instead of out_channels for reshape (2 instead of 3)
+        # This ensures mathematical compatibility: 524288 / 2 = 262144
+        target_channels = self.in_channels  # Use 2 instead of 3
+        target_seq_len = total_features // target_channels
+
+        # Ensure we can reshape exactly
+        if target_seq_len * target_channels != total_features:
+            # Truncate to make it divisible
+            usable_features = target_seq_len * target_channels
+            x = x[:, :usable_features]
+
+        x = x.view(batch_size, target_channels, target_seq_len)
+
+        # Apply target sequence length constraint
+        max_seq_len = 1024
+        if target_seq_len > max_seq_len:
+            x = x[:, :, :max_seq_len]
+            target_seq_len = max_seq_len
 
         # 1D branch
         one_d_features = self.one_d_branch(x)  # (batch_size, 64)
@@ -159,7 +173,7 @@ class Fusion1D2D(nn.Module):
         two_d_features = self.two_d_branch(spectrogram)  # (batch_size, 64)
 
         # Statistical features
-        stat_features = self.feature_extractor(x)  # (batch_size, out_channels * 5)
+        stat_features = self.feature_extractor(x)  # (batch_size, in_channels * 5)
 
         # Fusion
         fused = torch.cat([one_d_features, two_d_features, stat_features], dim=1)
