@@ -1,0 +1,121 @@
+# 标准MoE对比配置(无物理约束)
+# 用于验证物理先验约束的实际贡献
+
+defaults:
+  - base: config_unified_baseline.yaml
+
+# 实验配置
+args:
+  experiment_name: "MoE_standard_no_physics"
+  dataset_task: "THU_018_basic"
+  model: "MoE"
+  data_dir: "/home/user/data/PHMbenchdata/PHM-Vibench/data/THU_018"
+  save_dir: "./save"
+  num_workers: 4
+  gpus: 1
+  seed: 42
+
+# 模型配置
+model:
+  name: "MoE"
+  num_classes: 5
+  feature_dim: 64
+  num_experts: 3
+
+  # 标准专家配置(无物理先验)
+  experts:
+    - name: "Expert1"
+      type: "MLP"  # 标准多层感知机
+      hidden_dims: [128, 64]
+      activation: "ReLU"
+    - name: "Expert2"
+      type: "MLP"  # 标准多层感知机
+      hidden_dims: [128, 64]
+      activation: "ReLU"
+    - name: "Expert3"
+      type: "CNN"  # 标准卷积网络
+      channels: [32, 64]
+      kernel_sizes: [3, 5]
+
+  # 门控网络配置
+  router:
+    type: "Standard"  # 标准门控，无物理约束
+    hidden_dim: 128
+    temperature: 1.0
+    use_load_balance: True
+
+  # 融合网络
+  fusion_net:
+    hidden_dims: [128, 64]
+    activation: "ReLU"
+    dropout: 0.1
+
+# 训练配置
+training:
+  num_epochs: 100
+  batch_size: 128
+  learning_rate: 0.001
+  optimizer: "Adam"
+  scheduler: "StepLR"
+  step_size: 30
+  gamma: 0.5
+  early_stopping:
+    patience: 15
+    min_delta: 0.001
+
+# 损失配置
+loss:
+  main_loss: "CrossEntropyLoss"
+  auxiliary_loss: "LoadBalanceLoss"  # 保持负载均衡
+  load_balance_weight: 0.01
+
+# 正则化
+regularization:
+  l2_norm: 1e-4
+  l1_norm: 0  # 与物理约束MoE保持一致
+
+# 评估配置
+evaluation:
+  metrics: ["accuracy", "precision", "recall", "f1_score"]
+  save_expert_activations: True
+  save_routing_weights: True
+
+# 可视化配置
+visualization:
+  save_training_curves: True
+  save_expert_utilization: True
+  save_routing_weights: True
+
+# 数据集配置
+dataset:
+  name: "THU_018"
+  target: "IF"  # 内圈故障
+  train_ratio: 0.8
+  val_ratio: 0.1
+  test_ratio: 0.1
+  normalize: True
+  data_augmentation: False
+
+# 检查点配置
+checkpoint:
+  save_top_k: 3
+  monitor: "val_accuracy"
+  mode: "max"
+  save_last: True
+
+# 日志配置
+logging:
+  log_every_n_steps: 50
+  val_check_interval: 1.0
+  progress_bar_refresh_rate: 20
+
+# 设备配置
+device:
+  device_type: "cuda"
+  device_id: 3  # 使用GPU 3
+  pin_memory: True
+
+# 可重现性
+reproducibility:
+  seed: 42
+  deterministic: True

@@ -1,0 +1,46 @@
+args:
+  reload: True
+  wandb: True
+  save_dir: ./save
+  version: test
+  data_dir: ./data/THU_018 # 请确保替换为实际的数据集路径
+  batch_size: 32
+  learning_rate: 0.001
+  max_epochs: 100
+  accelerator: auto
+  devices: 1
+  num_workers: 4
+  seed: 42
+
+  # 模型参数
+  in_dim: 4096
+  out_dim: 512
+  in_channels: 1
+  out_channels: 1
+  scale: 4
+  dropout: 0.1
+  # 如果需要残差连接，将其设置为True
+  skip_connection: True
+
+  # 2025-11-29修复：恢复原始L1正则化系数
+  l1_norm: 0.0001  # 修复：从0.00001恢复到0.0001
+
+  # 2025-12-02新增：梯度裁剪防止数值不稳定
+  gradient_clip_val: 1.0
+
+  # 2025-12-02新增：降低学习率增加稳定性
+  learning_rate: 0.0005
+
+  dataset_task: THU_018_basic
+  target: IF
+
+  monitor: val_loss
+  patience: 15
+
+model:
+  path: model.OperatorAttention
+  name: OperatorAttention
+
+data:
+  path: dataset.VBenchDataset
+  name: VbenchDataset

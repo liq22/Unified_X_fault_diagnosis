@@ -1,0 +1,107 @@
+# MoE同参数量TSPN对比配置
+# 基于MoE实际参数量36K进行公平对比
+
+defaults:
+  - base: config_unified_baseline.yaml
+
+# 实验配置
+args:
+  experiment_name: "TSPN_MoE_fair_comparison"
+  dataset_task: "THU_018_basic"
+  model: "TSPN"
+  data_dir: "/home/user/data/PHMbenchdata/PHM-Vibench/data/THU_018"
+  save_dir: "./save"
+  num_workers: 4
+  gpus: 1
+  seed: 42
+
+# 模型配置 (匹配MoE的36K参数)
+model:
+  name: "TSPN"
+  in_dim: 4096
+  in_channels: 2
+  out_dim: 4096
+  out_channels: 32
+  scale: 2  # 减小以匹配参数量
+  skip_connection: True
+
+  # 信号处理层配置 (简化以匹配MoE复杂度)
+  layer1: "FFT"      # 快速傅里叶变换
+  layer2: "WF"       # 小波滤波
+  layer3: "HT"       # 希尔伯特变换
+  layer4: "I"        # 恒等变换
+
+  # 分类器配置 (匹配MoE)
+  classifier_dims: [128, 64]  # 简化分类器以匹配参数量
+  num_classes: 5
+  dropout_rate: 0.1
+
+# 训练配置
+training:
+  num_epochs: 100
+  batch_size: 128
+  learning_rate: 0.001
+  optimizer: "Adam"
+  scheduler: "StepLR"
+  step_size: 30
+  gamma: 0.5
+  early_stopping:
+    patience: 15
+    min_delta: 0.001
+
+# 损失配置
+loss:
+  main_loss: "CrossEntropyLoss"
+  auxiliary_loss: "SignalReconstructionLoss"
+  alpha: 0.1
+
+# 正则化 (移除L1以公平对比)
+regularization:
+  l2_norm: 1e-4
+  l1_norm: 0  # 与MoE修复配置保持一致
+
+# 评估配置
+evaluation:
+  metrics: ["accuracy", "precision", "recall", "f1_score"]
+  save_attention_weights: True
+  save_feature_maps: True
+
+# 可视化配置
+visualization:
+  save_training_curves: True
+  save_confusion_matrix: True
+  save_attention_weights: True
+
+# 数据集配置
+dataset:
+  name: "THU_018"
+  target: "IF"  # 内圈故障
+  train_ratio: 0.8
+  val_ratio: 0.1
+  test_ratio: 0.1
+  normalize: True
+  data_augmentation: False
+
+# 检查点配置
+checkpoint:
+  save_top_k: 3
+  monitor: "val_accuracy"
+  mode: "max"
+  save_last: True
+
+# 日志配置
+logging:
+  log_every_n_steps: 50
+  val_check_interval: 1.0
+  progress_bar_refresh_rate: 20
+
+# 设备配置
+device:
+  device_type: "cuda"
+  device_id: 2  # 使用GPU 2
+  pin_memory: True
+
+# 可重现性
+reproducibility:
+  seed: 42
+  deterministic: True
