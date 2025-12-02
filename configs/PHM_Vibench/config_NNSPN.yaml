@@ -1,0 +1,106 @@
+# NNSPN - 神经信号处理网络 (PHM-Vibench数据集)
+signal_processing_configs:
+  layer1: ['I','WF','I']
+  layer2: ['HT','WF','I']
+  layer3: ['I','WF','I']
+  layer4: ['HT','WF','I']
+
+feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMean', 'Kurtosis', 'RMS', 'CrestFactor','Skewness', 'ClearanceFactor', 'ShapeFactor']
+
+# PHM-Vibench数据集配置
+vbench_config:
+  # 数据路径配置
+  data_dir: "/home/user/data/PHMbenchdata/PHM-Vibench"
+  metadata_file: "metadata_6_11.xlsx"
+
+  # 任务配置
+  task_type: "fault_diagnosis"
+  target_column: "Label"
+
+  # 数据集筛选
+  dataset_ids: [1, 2, 3, 6, 7, 8]  # CWRU, XJTU, FEMTO, THU, MFPT, UNSW
+
+  # 智能采样配置
+  sampling_config:
+    method: "smart"
+    ids_cap: 100
+    ensure_unique_ids: true
+    target_per_class: 500
+    min_samples_per_id: 1
+    window_strategy: "random"
+    windows_per_file: null
+    resample_strategy: "repeat"
+
+  # 窗口配置
+  window_config:
+    window_length: 4096
+    stride: 1024
+    padding_mode: "reflect"
+    min_window_ratio: 0.5
+
+  # 域自适应配置
+  domain_config:
+    leave_one_domain_out: false
+    target_domain: null
+
+  # 数据分割
+  split_config:
+    train_ratio: 0.7
+    val_ratio: 0.1
+    test_ratio: 0.2
+    stratify_by: "Label"
+
+  # 数据增强
+  augmentation:
+    enable: false
+    noise_std: 0.01
+    time_scale_range: [0.9, 1.1]
+    amp_scale_range: [0.9, 1.1]
+
+args:
+  model: NNSPN
+  skip_connection: true
+  scale: 4
+  l1_norm: 0.0001
+  num_epochs: 100
+  patience: 15
+  gpus: 1
+
+  # 数据相关配置
+  device: cuda
+  dataset_task: "PHM_Vibench_basic"
+  target: 'Multi'
+  k_shot: null
+
+  # 模型参数
+  num_classes: null
+  in_dim: 4096
+  out_dim: 4096
+  in_channels: 2
+  out_channels: 3
+
+  # 频率参数
+  f_c_mu: 0
+  f_c_sigma: 0.1
+  f_b_mu: 0
+  f_b_sigma: 0.1
+
+  # 训练超参数
+  learning_rate: 0.001
+  batch_size: 64
+  weight_decay: 0.0001
+  num_workers: 8
+  seed: 17
+
+  # 训练设置
+  monitor: 'val_loss'
+  pruning: None
+  snr: 0
+
+  # 实验标识
+  experiment_type: 'PHM_unified_baseline'
+  description: 'NNSPN神经信号处理网络在PHM-Vibench数据集上的统一基线实验'
+
+  # W&B项目配置
+  wandb_project: 'PHM-Vibench-Unified-Baseline'
+  wandb_group: 'NNSPN'

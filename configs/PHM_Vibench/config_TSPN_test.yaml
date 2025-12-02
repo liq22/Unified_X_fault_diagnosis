@@ -1,0 +1,100 @@
+# TSPN - 透明信号处理网络 (PHM-Vibench测试配置)
+signal_processing_configs:
+  layer1: ['HT','WF','I']
+  layer2: ['HT','WF','I']
+  layer3: ['HT','WF','I']
+  layer4: ['HT','WF','I']
+
+feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMean', 'Kurtosis', 'RMS', 'CrestFactor','Skewness', 'ClearanceFactor', 'ShapeFactor']
+
+# PHM-Vibench数据集配置 - 简化测试
+vbench_config:
+  # 数据路径配置
+  data_dir: "/home/user/data/PHMbenchdata/PHM-Vibench"
+  metadata_file: "metadata_6_11.xlsx"
+
+  # 任务配置
+  task_type: "fault_diagnosis"
+  target_column: "Label"
+
+  # 数据集筛选 - 仅使用CWRU进行快速测试
+  dataset_ids: [1]  # 仅CWRU数据集
+
+  # 智能采样配置 - 简化
+  sampling_config:
+    method: "random"  # 使用随机采样避免复杂问题
+    target_per_class: 50  # 减少样本数
+    min_samples_per_id: 1
+
+  # 窗口配置 - 减小窗口大小
+  window_config:
+    window_length: 2048  # 减小窗口长度
+    stride: 512
+    padding_mode: "reflect"
+    min_window_ratio: 0.5
+
+  # 域自适应配置 - 关闭
+  domain_config:
+    leave_one_domain_out: false
+    target_domain: null
+
+  # 数据分割
+  split_config:
+    train_ratio: 0.7
+    val_ratio: 0.15
+    test_ratio: 0.15
+    stratify_by: "Label"
+
+  # 数据增强 - 关闭
+  augmentation:
+    enable: false
+
+args:
+  model: TSPN
+  skip_connection: true
+  scale: 4
+  l1_norm: 0.0001
+  gradient_clip_val: 1.0
+  gradient_clip_algorithm: 'norm'
+  num_epochs: 5  # 仅训练5轮进行测试
+  patience: 3
+  gpus: 1
+
+  # 数据相关配置
+  device: cuda
+  dataset_task: "PHM_Vibench_basic"
+  target: 'Multi'
+  k_shot: null
+
+  # 模型参数
+  num_classes: null  # 自动从数据中获取
+  in_dim: 2048  # 减小输入维度
+  out_dim: 2048
+  in_channels: 2
+  out_channels: 3
+
+  # 频率参数
+  f_c_mu: 0
+  f_c_sigma: 0.1
+  f_b_mu: 0
+  f_b_sigma: 0.1
+
+  # 训练超参数
+  learning_rate: 0.001
+  batch_size: 32  # 减小批次大小
+  weight_decay: 0.0001
+  num_workers: 4  # 减少worker数量
+  seed: 17
+
+  # 训练设置
+  monitor: 'val_loss'
+  pruning: None
+  snr: 0
+
+  # 实验标识
+  experiment_type: 'PHM_test'
+  description: 'PHM-Vibench数据集简化测试'
+
+  # W&B项目配置
+  wandb_project: 'PHM-Vibench-Test'
+  wandb_group: 'Test'
