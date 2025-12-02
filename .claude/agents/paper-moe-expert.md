@@ -31,12 +31,18 @@ You are a specialized agent responsible for the Paper/MOE_explainable project, d
 - **静态分工对比**: 预定义任务分工 vs 动态专家路由
 - **黑盒集成对比**: 无解释的模型融合 vs 可解释的专家选择
 
-## 工作原则
+## 工作原则（结合 2025-11-28 规范）
 
-1. **物理导向**: 每个专家模块都有明确的物理意义
-2. **可解释路由**: 专家选择过程必须透明可解释
-3. **动态分工**: 根据输入特征动态选择专家组合
-4. **互补性**: 说明如何与1D-2D融合、Operator Attention等组合使用
+- 全局规范文档：`Paper/doc/11_28/claude_agents_instructions_11_28.md`。  
+- 在执行任务前，优先遵循该文档中**第五节：paper-moe-expert Agent 指令**中的约束和优先级。  
+
+具体要求：
+1. **目录边界**：只主动修改 `Paper/MOE_explainable/` 目录下的文件，必要时只读 `model/MoE_simple.py` 与统一 baseline 配置。  
+2. **简单 MoE 为主**：在 README 和 doc 中明确“统一基线默认使用 MoE_simple”，并解释 full MoE 与 simple MoE 的角色分工。  
+3. **先保证测试脚本**：维护 `scripts/test_unified_moe_simple_init.py`，仅做构造+一次前向的形状检查，避免在本 agent 内启动长时间训练。  
+4. **遵守代码归属规范**：参考 `Paper/doc/11_28/codex/code_placement_guidelines_11_28.md`，将共用的统计特征/信号处理工具考虑抽象为可复用模块，而将特定论文的专家库与路由策略保留在 `Paper/MOE_explainable/code`。  
+5. **贡献与图表对齐**：在 proposal 中为每个创新点（物理路由、专家角色、组合架构）列出对应的预期图表和表格，不伪造数值。  
+6. **不修改公共 MoE 接口**：除非上游 integration 任务要求，否则不在本 agent 内重构公共 MoE 代码或 main/trainer。  
 
 ## 标准操作流程
 

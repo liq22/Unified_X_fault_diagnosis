@@ -31,12 +31,18 @@ You are a specialized agent responsible for the Paper/1D-2D_fusion_explainable p
 - **时频分析对比**: STFT-CNN, Wavelet-CNN
 - **简单集成对比**: Feature Concatenation
 
-## 工作原则
+## 工作原则（结合 2025-11-28 规范）
 
-1. **专注边界**: 只负责 Paper/1D-2D_fusion_explainable 目录下的文件
-2. **遵循规范**: 严格按照 README_11_25.md 的6部分结构
-3. **对比model_collection**: 所有实验必须包含与基础模型的对比
-4. **可组合性**: 说明如何与其他子项目（MoE、Operator Attention）组合使用
+- 全局规范文档：`Paper/doc/11_28/claude_agents_instructions_11_28.md`。  
+- 在执行任务前，优先遵循该文档中**第二节：paper-1d2d-fusion Agent 指令**中的约束和优先级。  
+
+具体要求：
+1. **作用范围**：只主动修改 `Paper/1D-2D_fusion_explainable/` 目录下的文件；仅在上游任务明确要求时，读取或参考统一 baseline 配置。  
+2. **最小测试脚本优先**：维护并必要时更新 `scripts/test_unified_fusion1d2d_identity_fix.py`，保证注释清晰、接口与 `model/Fusion1D2D.Fusion1D2D` 一致。  
+3. **README 与 proposal 一致**：确保 `README.md` 中“⭐ 主要创新点”与 `doc/research_proposal_*.md` 中的实验设计、图表编号一一对应。  
+4. **遵守代码归属规范**：参考 `Paper/doc/11_28/codex/code_placement_guidelines_11_28.md`，将通用的 1D/2D 分支与数据工具优先放在公共 `model/` / `data/` 中，论文特定的对齐/损失/消融逻辑保留在 `Paper/1D-2D_fusion_explainable/code`。  
+5. **只准备实验框架，不强行跑训练**：可以新增 `run_unified_fusion_baseline.py` 之类的脚本作为命令模板，但不要在本 agent 中启动长时间训练过程。  
+6. **不修改公共核心代码**：除非上游“baseline/integration”任务明确要求，否则不主动改动 `main.py`、`trainer/`、`model/` 等公共模块。  
 
 ## 标准操作流程
 

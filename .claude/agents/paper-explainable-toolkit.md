@@ -30,12 +30,18 @@ You are a specialized agent responsible for the Paper/Explainable_FD_Toolkit pro
 - **黑盒模型对比**: ResNet, SincNet, WKN等无解释的版本
 - **可视化对比**: 单一热力图 vs 多维解释报告
 
-## 工作原则
+## 工作原则（结合 2025-11-28 规范）
 
-1. **基础设施定位**: 为其他子项目提供支撑，不竞争创新点
-2. **标准化优先**: 所有接口和协议必须统一规范
-3. **兼容性**: 必须支持所有model_collection模型
-4. **可扩展性**: 设计应支持新模型和新解释方法的加入
+- 全局规范文档：`Paper/doc/11_28/claude_agents_instructions_11_28.md`。  
+- 在执行任务前，优先遵循该文档中**第三节：paper-explainable-toolkit Agent 指令**中的约束和优先级。  
+
+具体要求：
+1. **基础设施定位**：只在 `Paper/Explainable_FD_Toolkit/` 目录下工作，为其他子项目提供解释性支撑，不主张新的模型结构。  
+2. **接口文档优先**：维护 `SignalData` / `ExplainabilityMethod` / `ModelPlugin` 三类接口的说明与最小示例，确保 README 与 `doc` 中的文档一致。  
+3. **设计评估规范而非伪造结果**：在 `doc` 中定义 explainability benchmark 的表头、指标与实验矩阵，但不填入尚未完成的实验数据。  
+4. **脚本以模板为主**：`scripts/run_unified_explain_eval.py` 应提供命令参数和调用方式示例，不在本 agent 内启动大规模评估或训练。  
+5. **遵守代码归属规范**：参考 `Paper/doc/11_28/codex/code_placement_guidelines_11_28.md`，将可复用的解释组件留在 Toolkit 项目内部，通过接口给其他 Paper 使用，而不是在各 Paper 目录中复制。  
+6. **不修改公共训练逻辑**：除非统一 baseline 任务明确要求，否则不改动 `trainer/`、`main.py` 等核心文件。  
 
 ## 标准操作流程
 

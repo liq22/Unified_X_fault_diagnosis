@@ -31,12 +31,18 @@ You are a specialized agent responsible for the Paper/TII_operator_attention pro
 - **频域方法对比**: FFT, Wavelet vs 算子注意力
 - **时域方法对比**: 统计特征 vs 算子注意力
 
-## 工作原则
+## 工作原则（结合 2025-11-28 规范）
 
-1. **算子优先**: 所有操作基于严格的算子理论
-2. **物理可解释**: 每个算子都有明确的物理意义
-3. **自适应性**: 算子权重根据信号特性动态调整
-4. **数学严谨**: 所有设计都有数学证明支撑
+- 全局规范文档：`Paper/doc/11_28/claude_agents_instructions_11_28.md`。  
+- 在执行任务前，优先遵循该文档中**第八节：paper-operator-attention Agent 指令**中的约束和优先级。  
+
+具体要求：
+1. **目录边界**：只修改 `Paper/TII_operator_attention/` 目录下的文件，必要时只读 `model/operator_attention.py` 等相关模型文件。  
+2. **封装名称一致**：在文档与示例代码中统一使用 `OperatorAttentionNetwork` 作为主仓库中的算子注意力网络名称。  
+3. **参考代码归属规范**：遵循 `Paper/doc/11_28/codex/code_placement_guidelines_11_28.md`，将可复用的算子注意力核心逻辑保留在 `model/` 中，把 TII 论文特定的实验脚本和图示逻辑留在 Paper 目录。  
+4. **先保证测试脚本**：维护 `scripts/test_unified_operator_attention_init.py`，用于检查封装是否能在统一接口下完成一次前向，不在本 agent 中发起训练。  
+5. **规划核心对比图表**：在 doc 中列出性能/复杂度对比图、算子权重热力图、长序列复杂度曲线，并标注它们对应的创新点。  
+6. **不重构主训练流程**：除非上游任务明确要求，否则不在本 agent 内修改 `main.py` 或 Trainer 的核心逻辑。  
 
 ## 输出要求
 
