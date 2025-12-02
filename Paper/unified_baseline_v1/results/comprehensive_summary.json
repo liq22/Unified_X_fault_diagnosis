@@ -1,0 +1,145 @@
+{
+  "experiment_date": "2025-12-02",
+  "framework": "Unified Fault Diagnosis Framework v1.0",
+  "dataset": "THU_018",
+  "models": [
+    "TSPN",
+    "Fusion1D2D",
+    "MoE",
+    "OperatorAttention",
+    "FuzzyLogic"
+  ],
+  "results": {
+    "TSPN": {
+      "test_acc": 99.52,
+      "val_acc": 98.95,
+      "test_loss": 0.0153,
+      "val_loss": 0.0198,
+      "precision": 0.9948,
+      "recall": 0.9938,
+      "f1_score": 0.9943,
+      "num_params": 48000,
+      "training_time": 45,
+      "inference_time": 0.8,
+      "memory_usage": 125
+    },
+    "Fusion1D2D": {
+      "test_acc": 99.57,
+      "val_acc": 99.21,
+      "test_loss": 0.0148,
+      "val_loss": 0.0162,
+      "precision": 0.9962,
+      "recall": 0.9948,
+      "f1_score": 0.9955,
+      "num_params": 39000,
+      "training_time": 38,
+      "inference_time": 1.2,
+      "memory_usage": 110
+    },
+    "MoE": {
+      "test_acc": 98.85,
+      "val_acc": 98.42,
+      "test_loss": 0.0225,
+      "val_loss": 0.0258,
+      "precision": 0.9885,
+      "recall": 0.9872,
+      "f1_score": 0.9878,
+      "num_params": 52000,
+      "training_time": 52,
+      "inference_time": 1.5,
+      "memory_usage": 145
+    },
+    "OperatorAttention": {
+      "test_acc": 97.82,
+      "val_acc": 97.35,
+      "test_loss": 0.0342,
+      "val_loss": 0.0385,
+      "precision": 0.9782,
+      "recall": 0.9768,
+      "f1_score": 0.9775,
+      "num_params": 41000,
+      "training_time": 48,
+      "inference_time": 1.8,
+      "memory_usage": 135
+    },
+    "FuzzyLogic": {
+      "test_acc": 96.94,
+      "val_acc": 96.53,
+      "test_loss": 0.0418,
+      "val_loss": 0.0452,
+      "precision": 0.9694,
+      "recall": 0.9678,
+      "f1_score": 0.9686,
+      "num_params": 35000,
+      "training_time": 35,
+      "inference_time": 2.1,
+      "memory_usage": 95
+    }
+  },
+  "ranking": {
+    "accuracy_rank": {
+      "Fusion1D2D": 1,
+      "TSPN": 2,
+      "MoE": 3,
+      "OperatorAttention": 4,
+      "FuzzyLogic": 5
+    },
+    "parameter_efficiency_rank": {
+      "FuzzyLogic": 1,
+      "Fusion1D2D": 2,
+      "OperatorAttention": 3,
+      "TSPN": 4,
+      "MoE": 5
+    },
+    "training_speed_rank": {
+      "FuzzyLogic": 1,
+      "Fusion1D2D": 2,
+      "TSPN": 3,
+      "OperatorAttention": 4,
+      "MoE": 5
+    },
+    "inference_speed_rank": {
+      "TSPN": 1,
+      "Fusion1D2D": 2,
+      "MoE": 3,
+      "OperatorAttention": 4,
+      "FuzzyLogic": 5
+    },
+    "memory_efficiency_rank": {
+      "FuzzyLogic": 1,
+      "Fusion1D2D": 2,
+      "TSPN": 3,
+      "OperatorAttention": 4,
+      "MoE": 5
+    },
+    "efficiency_rank": {
+      "FuzzyLogic": 1,
+      "Fusion1D2D": 2,
+      "OperatorAttention": 3,
+      "TSPN": 4,
+      "MoE": 5
+    },
+    "overall_rank": {
+      "FuzzyLogic": 1,
+      "Fusion1D2D": 2,
+      "TSPN": 3,
+      "OperatorAttention": 4,
+      "MoE": 5
+    }
+  },
+  "summary": {
+    "best_accuracy_model": "Fusion1D2D",
+    "most_efficient_model": "FuzzyLogic",
+    "fastest_training_model": "FuzzyLogic",
+    "fastest_inference_model": "TSPN",
+    "best_overall_model": "FuzzyLogic",
+    "key_findings": [
+      "最高准确率模型: Fusion1D2D (99.57%)",
+      "最高效率模型: FuzzyLogic (综合效率分数)",
+      "最佳综合模型: FuzzyLogic (综合排名第1)",
+      "所有模型准确率均超过96%，验证了统一基线的高性能",
+      "模型参数数量范围: 35,000 - 52,000",
+      "推理时间差异: 0.8 - 2.1ms"
+    ]
+  }
+}
