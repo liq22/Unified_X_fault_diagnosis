@@ -1,0 +1,139 @@
+{
+  "start_time": "2025-12-01T22:16:51.616552",
+  "models": [
+    "TSPN",
+    "Fusion1D2D",
+    "MoE",
+    "OperatorAttention",
+    "FuzzyLogic"
+  ],
+  "seeds": [
+    42,
+    123,
+    456
+  ],
+  "total_tests": 15,
+  "estimated_duration_hours": 7.5,
+  "test_matrix": [
+    {
+      "model": "TSPN",
+      "seed": 42,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "TSPN",
+      "seed": 123,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "TSPN",
+      "seed": 456,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "Fusion1D2D",
+      "seed": 42,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "Fusion1D2D",
+      "seed": 123,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "Fusion1D2D",
+      "seed": 456,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "MoE",
+      "seed": 42,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "MoE",
+      "seed": 123,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "MoE",
+      "seed": 456,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "OperatorAttention",
+      "seed": 42,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "OperatorAttention",
+      "seed": 123,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "OperatorAttention",
+      "seed": 456,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "FuzzyLogic",
+      "seed": 42,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "FuzzyLogic",
+      "seed": 123,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    },
+    {
+      "model": "FuzzyLogic",
+      "seed": 456,
+      "status": "pending",
+      "start_time": null,
+      "end_time": null,
+      "result": null
+    }
+  ]
+}

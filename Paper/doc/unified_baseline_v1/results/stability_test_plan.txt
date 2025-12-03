@@ -1,0 +1,59 @@
+# 统一基线v1 - 稳定性测试计划
+
+## 生成时间
+2025-12-01 22:16:51
+
+## 测试目标
+为统一故障诊断框架的5个核心模型进行3次种子稳定性测试，验证模型的性能一致性和鲁棒性。
+
+## 测试配置
+
+### 模型列表
+- TSPN: configs/unified_baseline/config_TSPN.yaml
+- Fusion1D2D: configs/unified_baseline/config_Fusion1D2D.yaml
+- MoE: configs/unified_baseline/config_MoE.yaml
+- OperatorAttention: configs/unified_baseline/config_OperatorAttention.yaml
+- FuzzyLogic: configs/unified_baseline/config_FuzzyLogic.yaml
+
+### 测试种子
+42, 123, 456
+
+### 测试矩阵
+总计 5 × 3 = 15 个实验
+
+## 执行计划
+
+### 阶段1: 快速验证（推荐）
+选择2-3个代表性模型进行快速测试：
+- TSPN（基线模型）
+- Fusion1D2D（最佳性能模型）
+- OperatorAttention（需要优化的模型）
+
+### 阶段2: 完整测试（可选）
+如果时间允许，完成全部5个模型的稳定性测试。
+
+### 预估时间
+- 快速验证：约3小时（3模型 × 3种子 × 20分钟）
+- 完整测试：约7.5小时（5模型 × 3种子 × 30分钟）
+
+## 监控指标
+- 验证准确率及标准差
+- 训练收敛轮数
+- 训练时间
+- 模型稳定性评分
+
+## 成功标准
+- 准确率标准差 < 2%
+- 无训练失败案例
+- 收敛行为一致
+
+## 后续分析
+测试完成后将生成：
+1. 稳定性分析报告
+2. 性能分布箱线图
+3. 模型可靠性评估
+4. 部署建议
+
+---
+
+*注意：稳定性测试需要大量计算资源，建议在空闲时间批量执行*
