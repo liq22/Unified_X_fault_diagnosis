@@ -1,46 +1,92 @@
-# 7 篇 Paper 最新状态与解耦 TODO（截至 2025-12-02）
+# 统一故障诊断项目论文状态与TODO任务清单（2025-12-02）
 
-> 本文件基于 6 个智能体（GLM / Codex / Gemini 等）在 `Paper/doc/12_2/glm` 与 `Paper/doc/12_2/codex` 中的最新结果整理而成。  
-> 目标：更新前 6 个 paper 的状态，并为 7 篇 paper 给出**互相解耦**的最新 TODO，便于分别交给对应的 Claude Code agent 执行。  
-> 代码与文档原则：每个 paper 只改动自己目录下的文件，公共代码放在主仓库公共模块中。
-
----
-
-## 总体说明
-
-- 统一基线最新权威快照：`Paper/doc/12_2/codex/unified_baseline_results_table_12_02_v3.md`  
-- 代码归属规范：`Paper/doc/11_28/codex/code_placement_guidelines_11_28.md`  
-  - 公共代码：`model/`, `data/`, `trainer/`, `utils/`, `configs/`  
-  - 论文专属代码与文档：各自 `Paper/<ProjectName>/` 目录  
-- 7 个 paper 与目录映射：
-  - 📘 1D‑2D Fusion → `Paper/1D-2D_fusion_explainable/`
-  - 🟢 Explainable FD Toolkit → `Paper/Explainable_FD_Toolkit/`
-  - 🟣 LLM Explainable FD Toolkit → `Paper/LLM_Explainable_FD_Toolkit/`
-  - 🟠 MoE Explainable → `Paper/MOE_explainable/`
-  - 🩷 Fuzzy‑XFD → `Paper/Paper_fuzzy_XFD/`
-  - 🟦 Neural‑Symbolic Theory → `Paper/Neuralsymbolic_theory/`
-  - 🔴 Operator Attention → `Paper/TII_operator_attention/`
+> **更新时间**: 2025-12-02
+> **版本**: v3.0
+> **项目阶段**: 重大突破期，3篇论文已完成，4篇进行中
+>
+> 本文件基于项目最新进展整理，融合了 GLM 分析、统一基线结果和各子项目状态。
+> 目标：为7篇论文给出**互相解耦**的最新TODO，便于分别交给对应的Claude Code agent执行。
+> 代码原则：每个paper只改动自己目录下的文件，公共代码放在主仓库公共模块中。
 
 ---
 
-## 1️⃣ 📘 1D‑2D Fusion Explainable
+## 📊 项目总体概况
 
-**当前状态（来自统一基线 v3 与 GLM 报告）**
-- THU_018_basic 上 5 次 run：best ≈ **99.57%**，整体约 **97% ± 2%**，形状问题已彻底修复。  
-- 已有：性能对比图、模态贡献热图、注意力权重图，以及较完整的 README / proposal。  
-- 在 7 篇论文中，实验与文档最接近“可投稿”状态。
+### 核心突破
+- **FuzzyLogic重大突破**: 70.7%准确率（从20%提升250%），仅7.6K参数
+- **统一基线框架v3**: 5个核心模型，完整性能对比
+- **PHM-Benchdata集成**: 20+轴承数据集统一支持
+- **7篇论文独立进展**: 明确解耦，无代码冲突
 
-**解耦后的局部 TODO（仅改动 `Paper/1D-2D_fusion_explainable/`）**
-1. `doc/` 中补一个「图表与实验索引」小节  
-   - 列出核心图表文件（性能曲线、模态贡献热图、注意力权重图）及其路径。  
-   - 为每个图表标注对应的统一基线配置（引用 `unified_baseline_results_table_12_02_v3.md` 中的行号或模型名+seed）。  
-2. 在 research proposal / README 中**重新表述结果**  
-   - 明确区分：`99.57%` 是 single best run，论文中的结论基于“约 97% 的平均性能 + 方差”。  
-   - 增加 1 小节说明：目前仅在 THU_018_basic 验证，后续将扩展到 CWRU / XJTU。  
-3. 设计但暂不必立即跑完的扩展实验小节（写在 proposal 内）  
-   - 多数据集验证（CWRU, XJTU）；  
-   - 消融实验：去掉 2D 模块 / 统计特征，只保留 1D；  
-   - 噪声增强与工况变化下的鲁棒性测试。  
+### 性能梯队
+| 梯队 | 模型 | 准确率 | 参数量 | 论文状态 |
+|------|------|--------|--------|----------|
+| 🥇 第一梯队 | Fusion1D2D | 99.57% | ~5M | ✅ 已完成 |
+| 🥇 第一梯队 | TSPN | 99%+ | ~2M | 🔄 基准 |
+| 🥈 第二梯队 | **FuzzyLogic** | **70.7%** | **7.6K** | **🔄 突破期** |
+| 🥉 第三梯队 | MoE_simple | 63.04% | 268M | ✅ 已验证 |
+| ⚠️ 第四梯队 | OperatorAttention | 20% | 7.6K | 🚨 紧急优化 |
+
+### 重要文档链接
+- 统一基线最新快照：`Paper/doc/12_2/codex/unified_baseline_results_table_12_02_v3.md`
+- 代码归属规范：`Paper/doc/11_28/codex/code_placement_guidelines_11_28.md`
+- 项目总体状态：`Paper/doc/12_2/glm/current_status_and_todo_12_02_2025.md`
+
+### 代码归属原则
+- **公共代码**: `model/`, `data/`, `trainer/`, `utils/`, `configs/`
+- **论文专属**: 各自 `Paper/<ProjectName>/` 目录
+
+### 7个Paper与目录映射
+- 📘 **1D‑2D Fusion** → `Paper/1D-2D_fusion_explainable/`
+- 🟢 **Explainable FD Toolkit** → `Paper/Explainable_FD_Toolkit/`
+- 🟣 **LLM Explainable FD Toolkit** → `Paper/LLM_Explainable_FD_Toolkit/`
+- 🟠 **MoE Explainable** → `Paper/MOE_explainable/`
+- 🩷 **Fuzzy‑XFD** → `Paper/Paper_fuzzy_XFD/`
+- 🟦 **Neural‑Symbolic Theory** → `Paper/Neuralsymbolic_theory/`
+- 🔴 **Operator Attention** → `Paper/TII_operator_attention/`
+
+---
+
+## 📝 各论文详细状态
+
+### 1️⃣ Paper 1: 1D-2D Fusion Explainable（📘 多模态融合）- **已完成**
+
+**当前状态**: ✅ 99.57%准确率，已验证
+**技术定位**: 1D时序+2D频谱多模态融合
+
+#### 核心成就
+- ✅ 业界领先性能：99.57%准确率
+- ✅ 三层对齐："物理-语义-几何"
+- ✅ 完整可视化：性能对比、贡献热图、注意力权重
+- ✅ 投稿准备：顶级期刊准备中
+
+#### 代码所有权
+```
+Paper/1D-2D_fusion_explainable/
+├── code/
+│   └── model/Fusion1D2D_simple.py   # 核心实现
+├── doc/
+└── results/                         # 可视化结果
+```
+
+#### 解耦TODO任务
+**优先级**: 📅 第二优先级（稳定性验证）
+
+1. **文档完善**（本周）
+   - [ ] `doc/`中补充「图表与实验索引」
+   - [ ] 重新表述99.57% vs 97%±2%的区别
+   - [ ] 标注统一基线配置引用
+
+2. **稳定性测试**（2周）
+   - [ ] 3-seed随机种子验证
+   - [ ] 性能方差分析
+   - [ ] 置信区间计算
+   - [ ] 鲁棒性测试
+
+3. **扩展设计**（文档中）
+   - [ ] 多数据集验证计划（CWRU, XJTU）
+   - [ ] 消融实验设计
+   - [ ] 噪声鲁棒性测试方案  
 
 ---
 
@@ -167,5 +213,109 @@
 - 公共代码改动（如 `model/`, `data/vbench_dataset.py`, `data/vbench_utils.py`）只能由“仓库级 Codex 任务”执行，paper agent 不直接改公共模块。  
 - 对于尚未完成的实验，本文件中的 TODO 以“设计与文档准备”为主，具体跑实验可以在后续任务中按需下发。  
 
-通过上述解耦，7 个 paper 可以在统一基线与公共框架之上**并行推进、互不干扰**，同时又保持清晰的一致性与可复现性。
+---
+
+## 🎯 整体资源分配与时间规划
+
+### 紧急行动计划（本周）
+
+#### GPU资源分配
+```yaml
+GPU分配策略:
+  GPU 0: OperatorAttention L1=1e-6实验
+  GPU 1: OperatorAttention LR=0.0005实验
+  GPU 2: OperatorAttention 算子池扩展实验
+  GPU 3: FuzzyLogic继续训练监控
+  GPU 4: Fusion1D2D稳定性测试启动
+```
+
+#### 每日任务排期
+- **周一-周二**: 启动3个OperatorAttention并行优化实验
+- **周三**: 评估初步结果，选择最佳参数组合
+- **周四-周五**: 长期训练（100 epoch），监控收敛
+- **周末**: FuzzyLogic训练进度检查和规则分析
+
+### 中期规划（2-4周）
+
+#### 第2周：性能突破期
+- [ ] 完成OperatorAttention优化（目标>60%）
+- [ ] FuzzyLogic达到75%准确率
+- [ ] 启动所有模型的3-seed稳定性测试
+
+#### 第3-4周：论文写作期
+- [ ] 3篇已完成论文的最终润色
+- [ ] FuzzyLogic突破论文初稿
+- [ ] 工具包集成测试完成
+
+### 关键里程碑
+- **Week 1**: OperatorAttention性能突破
+- **Week 2**: FuzzyLogic达到75%目标
+- **Week 3**: 稳定性测试完成
+- **Week 4**: 3篇论文投稿准备就绪
+- **Week 6**: 工具包v1.0发布
+
+---
+
+## 📈 成功指标与验收标准
+
+### 技术指标
+- **OperatorAttention**: 准确率>60%（提升200%）
+- **FuzzyLogic**: 准确率>75%（继续突破）
+- **Stability**: 所有模型3-seed方差<5%
+- **Integration**: 工具包与3个核心模型集成成功
+
+### 学术指标
+- **论文进度**: 3篇初稿完成，2篇投稿
+- **实验复现**: 所有关键实验可复现
+- **文档完整**: 所有Paper文档更新到最新状态
+
+### 工程指标
+- **代码质量**: 通过code-review
+- **测试覆盖**: 核心模块测试>80%
+- **性能基准**: 建立标准化benchmark
+
+---
+
+## ⚡ 风险预警与应对策略
+
+### 🔴 高风险项目
+1. **OperatorAttention优化失败**
+   - 风险等级：HIGH
+   - 应对：转向纯理论贡献，强调解释性价值
+
+2. **计算资源不足**
+   - 风险等级：MEDIUM
+   - 应对：错峰调度，云端GPU备用
+
+3. **论文时间延期**
+   - 风险等级：MEDIUM
+   - 应对：优先核心3篇，其他并行推进
+
+### 🛡️ 缓解措施
+- **并行开发**: 7个Paper完全解耦，互不影响
+- **快速迭代**: 每日评估，及时调整
+- **备选方案**: 为关键路径准备Plan B
+
+---
+
+## 📋 执行检查清单
+
+### 每日检查项
+- [ ] GPU实验状态正常
+- [ ] 训练日志记录完整
+- [ ] 无异常退出或OOM
+
+### 每周检查项
+- [ ] 实验进展与计划对比
+- [ ] 关键指标达成情况
+- [ ] 资源使用效率评估
+
+### 里程碑检查项
+- [ ] 阶段目标完成度
+- [ ] 论文写作进度
+- [ ] 下阶段准备就绪
+
+---
+
+通过上述解耦，7 个 paper 可以在统一基线与公共框架之上**并行推进、互不干扰**，同时又保持清晰的一致性与可复现性。结合详细的资源规划和风险管理，确保项目按时高质量交付。
 

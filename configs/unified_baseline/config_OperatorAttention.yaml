@@ -31,9 +31,9 @@ args:
   f_c_sigma: 0.1
   f_b_mu: 0
   f_b_sigma: 0.1
-  learning_rate: 0.001
+  learning_rate: 0.0005  # 降低学习率以提升稳定性
   batch_size: 64
-  weight_decay: 0.0001
+  weight_decay: 1e-5  # 降低权重衰减
   num_workers: 8
   seed: 17
   monitor: 'val_loss'
