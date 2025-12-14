@@ -16,15 +16,49 @@
 
 当前重点维护的 7 个论文子项目如下（路径即为实际目录）：
 
-- `Paper/1D-2D_fusion_explainable`
-- `Paper/Explainable_FD_Toolkit`
-- `Paper/LLM_Explainable_FD_Toolkit`
-- `Paper/MOE_explainable`
-- `Paper/Paper_fuzzy_XFD`
-- `Paper/Neuralsymbolic_theory`
-- `Paper/TII_operator_attention`
+- 1 `Paper/1D-2D_fusion_explainable`
+- 2 `Paper/Explainable_FD_Toolkit`
+- 3 `Paper/LLM_Explainable_FD_Toolkit`
+- 4 `Paper/MOE_explainable`
+- 5 `Paper/Paper_fuzzy_XFD`
+- 6 `Paper/Neuralsymbolic_theory`
+- 7 `Paper/TII_operator_attention`
 
 其中每个目录都视为一篇独立论文（或系列论文）的工程与写作仓库，统一依托本项目提供的模型、数据与可解释性工具。
+
+### 2.1 最新状态快照（按本文 Paper 顺序对齐）
+
+**状态快照日期**：2025-12-04（主要参考 `Paper/doc/12_4/glm/` 与 `Paper/doc/12_3/` 的阶段性复盘文档）  
+**重要约定**：后续所有“Paper编号”以本文为准；其他文档若出现编号不一致，请以**目录路径**作为唯一ID对齐。
+
+| 序号 | 目录 | 当前定位 | 快照完成度 | 关键结果（快照） | 最近优先 TODO（7天内） |
+|---:|---|---|---:|---|---|
+| 1 | `Paper/1D-2D_fusion_explainable` | 多模态融合可解释 | ~95% | Fusion1D2D 准确率 99.57%（统一基线SOTA） | 3-seed 稳定性；多数据集泛化（CWRU/XJTU/THU_006）；投稿材料格式化 |
+| 2 | `Paper/Explainable_FD_Toolkit` | 统一可解释性OS/基准 | ~80–85% | 统一接口+指标体系+基准评估框架已成型 | 补齐剩余模型适配（Fuzzy/OperatorAttention）；一键benchmark复现；2个工业demo+对比Captum/SHAP/LIME |
+| 3 | `Paper/LLM_Explainable_FD_Toolkit` | 自然语言解释与交互 | ~75% | Deepseek/GLM集成；成本下降（文档口径 60–80%） | 解释质量评估标准；用户研究设计；幻觉/安全防护与UI落地 |
+| 4 | `Paper/MOE_explainable` | 物理同构MoE专家系统 | ~85% | 已有可解释路由分析；但多文档间准确率/参数量口径需统一 | 复现最佳配置（含seed20路径）；3/5/8专家消融；训练稳定性改进（CV下降）与统一结果表输出 |
+| 5 | `Paper/Paper_fuzzy_XFD` | 规则可审计轻量模型 | ~90% | FuzzyLogic 20%→70.7%（+253.7%）；参数 7.6K（口径一致） | 冲击75%+；补齐高风险错误案例（安全兜底）；规则/隶属度可视化与稳定性统计 |
+| 6 | `Paper/Neuralsymbolic_theory` | NeSy统一理论框架 | ~70–85% | 四层架构+命题体系基本成型；命题2仍需增强证据链 | 命题2实验重做与图表更新；增加2–3个案例闭环；论文草稿整合成可投版本 |
+| 7 | `Paper/TII_operator_attention` | 算子级注意力（理论主导） | ~60% | 理论框架与合成信号验证方案已设计；工业数据性能仅概念验证（~20%） | 立即跑合成信号验证并产图；完善定理证明附录；明确“理论贡献优先于准确率”的论文叙事 |
+
+### 2.2 12_3 / 12_4 复盘文档索引（建议按目录对齐阅读）
+
+- 总路线图/投稿时间线：`Paper/doc/12_3/codex/papers_roadmap_7_projects_12_03_codex.md`
+- 总览/统一进展：`Paper/doc/12_4/glm/unified_project_review_12_04.md`
+- 全局待办与风险：`Paper/doc/12_4/glm/project_status_and_todo_12_04.md`
+- UXFD项目总评：`Paper/doc/12_4/glm/UXFD_project_review_status_todo_12_04_2025.md`
+- Paper 1（融合）：优先参考总览与统一进展（同上）
+- Paper 2（Toolkit）：`Paper/doc/12_4/glm/explainable_fd_toolkit_review_status_todo_12_04.md`、`Paper/doc/12_4/glm/Paper2_Status_Review_2025-12-03.md`
+- Paper 3（LLM）：优先参考总览与全局待办（同上）
+- Paper 4（MoE）：`Paper/doc/12_4/glm/moe_project_comprehensive_review_12_4.md`
+- Paper 5（Fuzzy）：优先参考总览与全局待办（同上）
+- Paper 6（NeSy）：`Paper/doc/12_4/glm/neuralsymbolic_theory_review_status_todo_12_04_2025.md`
+- Paper 7（OperatorAttention）：`Paper/doc/12_4/glm/operator_attention_review_and_todo_12_04.md`、`Paper/doc/12_3/codex/summary_and_todo_12_03_codex.md`
+
+### 2.3 全局P0（影响所有Paper的共性阻塞）
+
+- 数据路径/数据集可用性：`THU_018` 路径在部分文档中被标记为阻塞项，需先统一数据根目录与 `configs/` 口径。
+- 统一结果表真源：建议固定“统一基线结果表”的生成脚本与输出文件，所有论文/文档引用同一份表（避免准确率/参数量口径漂移）。
 
 ---
 

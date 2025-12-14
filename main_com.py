@@ -30,8 +30,10 @@ import pandas as pd
 import multiprocessing
 # 导入新的统一基线模型
 from model.OperatorAttention_simple import OperatorAttentionModel
+from model.OperatorAttention_enhanced import EnhancedOperatorAttentionModel
 from model.FuzzyLogic_simple import FuzzyLogicNetwork
 from model.MoE_simple import MoEModel
+from model.MoE import MoEModel as MoEAdvancedModel
 from model.Fusion1D2D_simple import Fusion1D2D
 if __name__ == '__main__':
     # multiprocessing.freeze_support()
@@ -63,8 +65,10 @@ if __name__ == '__main__':
             'MCN_GFK': lambda args: MultiChannel_MCN_GFK(ff=ff, in_channels=args.in_channels, num_MFKs=8, num_classes=args.num_classes),
             # 统一基线模型
             'OperatorAttention': lambda args: OperatorAttentionModel(signal_processing_modules, feature_extractor_modules, args),
+            'OperatorAttention_enhanced': lambda args: EnhancedOperatorAttentionModel(signal_processing_modules, feature_extractor_modules, args),
             'FuzzyLogic': lambda args: FuzzyLogicNetwork(signal_processing_modules, feature_extractor_modules, args),
-            'MoE_simple': lambda args: MoEModel(args),
+            'MoE_simple': lambda args: MoEModel(signal_processing_modules, feature_extractor_modules, args),
+            'MoE': lambda args: MoEAdvancedModel(args),
             'Fusion1D2D': lambda args: Fusion1D2D(args),
         }
 

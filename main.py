@@ -8,6 +8,7 @@ from model.Fusion1D2D_simple import Fusion1D2D
 from model.MoE_simple import MoEModel as MoE
 from model.OperatorAttention_simple import OperatorAttentionModel
 from model.FuzzyLogic_simple import FuzzyLogicNetwork
+from model.FuzzyLogic_v2 import create_model as FuzzyLogicV2Model
 from trainer.trainer_basic import Basic_plmodel
 from trainer.trainer_set import trainer_set
 from trainer.utils import load_best_model_checkpoint
@@ -128,6 +129,7 @@ if __name__ == '__main__':
             'MoE': lambda args: MoE(signal_processing_modules, feature_extractor_modules,args),
             'OperatorAttention': lambda args: OperatorAttentionModel(signal_processing_modules, feature_extractor_modules,args),
             'FuzzyLogic': lambda args: FuzzyLogicNetwork(signal_processing_modules, feature_extractor_modules,args),
+            'FuzzyLogicV2': lambda args: FuzzyLogicV2Model(signal_processing_modules, feature_extractor_modules,args),
         }
 
         model_plain = MODEL_DICT[args.model](args)

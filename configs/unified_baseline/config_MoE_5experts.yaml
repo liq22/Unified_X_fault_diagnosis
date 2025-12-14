@@ -1,0 +1,44 @@
+defaults:
+  - basic_config
+
+# Model Configuration
+model: MoE_simple_simple
+
+# MoE Specific Parameters
+args:
+  num_experts: 5
+  expert_hidden_dim: 128
+  expert_capacity: 64
+  gating_hidden_dim: 64
+  load_balancing: true
+  noise_epsilon: 1e-2
+
+# Training Configuration
+training:
+  max_epochs: 100
+  patience: 15
+  batch_size: 256
+  learning_rate: 0.001
+  optimizer: adam
+  scheduler: cosine
+
+# Data Configuration
+data:
+  dataset_task: THU_018_basic
+  data_dir: /home/user/data/PHMbenchdata/PHM-Vibench/THU_018_basic
+  target: IF
+  signal_length: 4096
+
+# Experiment Configuration
+experiment:
+  seed: 20  # 使用Seed 20的配置
+  experiment_name: MoE_5experts_seed20
+  save_dir: save/task_THU_018_basic/model_MoE_5experts
+  monitor: val_loss
+  mode: min
+
+# Logging
+logger:
+  project: THU_018_basic
+  name: MoE_5experts
+  tags: ["MoE", "ablation", "5_experts", "seed20"]

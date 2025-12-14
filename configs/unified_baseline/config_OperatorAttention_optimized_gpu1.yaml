@@ -51,10 +51,10 @@ args:
 
   batch_size: 64
   num_workers: 8
-  seed: 100  # GPU 0实验种子
+  seed: 200  # GPU 1实验种子
   monitor: 'val_loss'
   pruning: None
   snr: 0
   experiment_type: 'unified_baseline'
-  description: 'OperatorAttention优化版实验：移除L1，优化学习率调度'
-  experiment_name: 'OperatorAttention_optimized_v1'
+  description: 'OperatorAttention优化版实验GPU 1：16算子增强版本'
+  experiment_name: 'OperatorAttention_enhanced_gpu1'
