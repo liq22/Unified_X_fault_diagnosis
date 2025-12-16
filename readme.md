@@ -14,13 +14,56 @@
 
 # 快速开始
 
-## 环境配置
+## 三步开跑（推荐：`uxfd` 统一入口）
+
+### 1) 环境配置
+
+```bash
+conda env create -f environment.yml
+conda activate UXFD
+```
+
+### 2) 数据准备（PHM-Vibench / 多数据集）
+
+- 复制并编辑 `.env`（不要提交）：
+
+```bash
+cp .env.example .env
+```
+
+- 在 `.env` 中设置 `PHM_VIBENCH_ROOT`（指向 PHM-Vibench 数据根目录）。
+
+### 3) 一个配置文件跑 7 篇 paper（train/eval/explain/collect/report）
+
+- 先看计划（不跑训练）：
+
+```bash
+python -m uxfd run --run_config configs/unified_papers.yaml --dry_run
+```
+
+- 真跑（示例：单卡 0 号 GPU）：
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python -m uxfd run --run_config configs/unified_papers.yaml
+```
+
+运行产物遵循 Paper2 schema v1：每个 run 目录包含 `run_meta.yaml` + `metrics.json` + `artifacts/`，并可用 `python -m uxfd collect` 统一汇总。
+
+### 旧入口保持兼容
+
+```bash
+python main.py --config_dir configs/a_018_THU/config_TSPN.yaml
+python main.py --config_file configs/a_018_THU/config_TSPN.yaml
+python main_com.py --config_dir configs/unified_baseline/config_Resnet.yaml
+```
+
+## 环境配置（Legacy）
 
 请按照以下命令创建并激活 Conda 环境：
 
 ```shell
 conda env create -f environment.yml
-conda activate your_environment_name  # 将 'your_environment_name' 替换为实际的环境名称
+conda activate UXFD
 ```
 
 ## 配置文件
