@@ -366,10 +366,10 @@ class ReproducibilityManager:
         # Save seed information
         with open(self.run_dir / 'seeds.json', 'w') as f:
             json.dump({
-                'seed': seed,
-                'numpy_seed': np.random.get_state()[1][0],
-                'python_seed': random.getstate()[1][0],
-                'torch_seed': torch.initial_seed()
+                'seed': int(seed),
+                'numpy_seed': int(np.random.get_state()[1][0]),
+                'python_seed': int(random.getstate()[1][0]),
+                'torch_seed': int(torch.initial_seed())
             }, f, indent=2)
 
         self.log(f"Random seeds set to: {seed}")
