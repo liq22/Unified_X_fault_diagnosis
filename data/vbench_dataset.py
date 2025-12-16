@@ -370,12 +370,12 @@ class VbenchDataset(Dataset):
         end_pos = start_pos + sample_info['window_length']
         window_data = raw_data[start_pos:end_pos]
 
-        # 转换维度为 [C, L]
+        # 统一返回 [L, C]（与仓库其他数据集/模型期望一致：输入为 (batch, seq_len, channels)）
         if window_data.ndim == 2:
-            data = torch.from_numpy(window_data.T).float()
+            data = torch.from_numpy(window_data).float()
         else:
-            # 处理单通道情况
-            data = torch.from_numpy(window_data).float().unsqueeze(0)
+            # 处理单通道情况：[L] -> [L, 1]
+            data = torch.from_numpy(window_data).float().unsqueeze(-1)
 
         # 数据增强
         if self.transform:

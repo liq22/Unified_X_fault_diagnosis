@@ -1,0 +1,49 @@
+# UXFD Unified Run Config (v1)
+#
+# 目标：只用“一个配置文件”即可选择并运行 7 篇 paper 的全流程（train/eval/explain/collect/report）。
+# 说明：
+# - 模型训练仍以 legacy 入口 `main.py/main_com.py` 为真源；uxfd 负责编排 + 统一证据链（Paper2 schema）。
+# - tool/theory 类 paper 主要消费已有 runs（run_meta.yaml + metrics.json + artifacts/）。
+schema_version: uxfd_run_v1
+
+# 选择单篇：paper: paper1
+# 选择多篇/全部：
+papers: [paper1, paper4, paper5, paper7, paper2, paper3, paper6]
+
+# PHM-Vibench dataset_numeric_id（参考 data/vibench_dataset_catalog.md）
+datasets: [1, 2]
+
+# 至少 3-seed（顶刊口径）
+seeds: [20, 42, 2024]
+
+# 可选：train/eval/explain/collect/report/llm/theory_eval
+modes: [train, eval, explain, collect, report, llm, theory_eval]
+
+# collector 扫描 roots（兼容 legacy save/ 与新 outputs/）
+roots: [save, outputs]
+output_root: outputs
+
+report:
+  out_csv: results/results_table_master.csv
+  out_md: results/uxfd_report.md
+  target_paper: null
+
+llm:
+  provider: ${LLM_PRIMARY_PROVIDER}
+  style: standard
+  out_dir: outputs/uxfd/paper3_llm_explanations
+  max_items: 50
+
+theory:
+  out_dir: outputs/uxfd/paper6_theory_eval
+
+# 可选：覆写某个 paper 的 base_config（不写则用 uxfd.registry 的默认值）
+paper_overrides:
+  paper1:
+    base_config: configs/unified_baseline/config_Fusion1D2D.yaml
+  paper4:
+    base_config: configs/unified_baseline/config_MoE.yaml
+  paper5:
+    base_config: configs/unified_baseline/config_FuzzyLogic_v2.yaml
+  paper7:
+    base_config: configs/unified_baseline/config_OperatorAttention_fixed.yaml

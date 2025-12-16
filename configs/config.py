@@ -7,6 +7,8 @@ import yaml
 from types import SimpleNamespace
 import os 
 import time 
+import shutil
+from pathlib import Path
 
 # from model.Signal_processing import SignalProcessingBase,\
 #         SignalProcessingModuleDict,\
@@ -104,7 +106,18 @@ def parse_arguments(config_dir,it):
     # 读取YAML文件
     with open(yaml_dir, 'r') as f:
         config = yaml.safe_load(f)
-    args = SimpleNamespace(**config['args'])
+
+    config = _expand_env_vars(config)
+
+    if "args" not in config:
+        raise KeyError(f"Invalid config: missing 'args' in {yaml_dir}")
+
+    args = SimpleNamespace(**config["args"])
+    setattr(args, "config", config)
+    setattr(args, "config_dir", yaml_dir)
+
+    _merge_vbench_config_into_args(config, args)
+    _infer_num_classes_if_missing(args)
     
     
     # dataset = args.data_dir[-3:].replace('/','')
@@ -118,6 +131,15 @@ def parse_arguments(config_dir,it):
     if not os.path.exists(path):
         os.makedirs(path)
     args.path = path
+
+    # 保存 config 快照到 run 目录（可复现证据链）
+    snapshot_path = Path(path) / "config_snapshot.yaml"
+    snapshot_path.write_text(
+        yaml.safe_dump(config, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+    setattr(args, "config_snapshot_path", str(snapshot_path))
+
     return config,args,path,name
 #### 暂时无用，和parse功能一样 ################
 def yaml_arguments(yaml_dir): # 暂时无用
@@ -184,7 +206,7 @@ def get_unique_module_name(existing_names, module_name):
         while unique_name in existing_names:
             index += 1
             unique_name = f"{module_name}_{index}"
-        return unique_name
+    return unique_name
 # logic
 if __name__ == '__main__':
     pass
@@ -207,16 +229,77 @@ if __name__ == '__main__':
     args = SimpleNamespace(**config['args'])
 
 
+def _expand_env_vars(obj):
+    """
+    递归展开配置中的环境变量（支持 ${VAR} 与 $VAR）。
+    """
+    if isinstance(obj, dict):
+        return {k: _expand_env_vars(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_expand_env_vars(v) for v in obj]
+    if isinstance(obj, str):
+        return os.path.expandvars(obj)
+    return obj
 
-    signal_processing_modules = []
-    for layer in config['signal_processing_configs'].values():
-        signal_module = OrderedDict()
-        for module_name in layer:
-            module_class = ALL_SP[module_name]
-            signal_module[module_name] = module_class(args)  # 假设所有模块的构造函数不需要参数
-        signal_processing_modules.append(SignalProcessingModuleDict(signal_module))
 
-    feature_extractor_modules = OrderedDict()
-    for feature_name in config['feature_extractor_configs']:
-        module_class = ALL_FE[feature_name]
-        feature_extractor_modules[feature_name] = module_class()  # 假设所有模块的构造函数不需要参数
+def _merge_vbench_config_into_args(config: dict, args: SimpleNamespace) -> None:
+    """
+    兼容两种写法：
+    - 顶层 `vbench_config:`（历史 configs/PHM_Vibench, configs/vbench）
+    - `args.vbench_config:`（部分 paper configs）
+
+    规则：若两者同时存在，则以 `args.vbench_config` 覆盖顶层同名字段。
+    """
+    top_vb = config.get("vbench_config")
+    args_vb = getattr(args, "vbench_config", None)
+
+    if top_vb is None and args_vb is None:
+        return
+
+    merged = {}
+    if isinstance(top_vb, dict):
+        merged.update(top_vb)
+    if isinstance(args_vb, dict):
+        merged.update(args_vb)
+
+    setattr(args, "vbench_config", merged)
+
+
+def _infer_num_classes_if_missing(args: SimpleNamespace) -> None:
+    """
+    若 `args.num_classes` 为空且存在 vbench_config，则从 metadata.xlsx 推断类别数。
+    注意：这一步必须在模型初始化前完成（main.py 在 trainer_set 之前构建模型）。
+    """
+    if getattr(args, "num_classes", None) is not None:
+        return
+
+    vb = getattr(args, "vbench_config", None)
+    if not isinstance(vb, dict):
+        return
+
+    data_dir = vb.get("data_dir")
+    metadata_file = vb.get("metadata_file")
+    if not data_dir or not metadata_file:
+        return
+
+    try:
+        import pandas as pd
+    except Exception as exc:
+        raise RuntimeError("pandas is required to infer num_classes for VibenchDataset") from exc
+
+    metadata_path = Path(str(data_dir)) / str(metadata_file)
+    if not metadata_path.exists():
+        raise FileNotFoundError(f"Vibench metadata not found: {metadata_path}")
+
+    df = pd.read_excel(metadata_path)
+    dataset_ids = vb.get("dataset_ids")
+    if isinstance(dataset_ids, list) and len(dataset_ids) > 0 and "Dataset_id" in df.columns:
+        df = df[df["Dataset_id"].isin(dataset_ids)].reset_index(drop=True)
+
+    target_column = vb.get("target_column", "Label")
+    if target_column not in df.columns:
+        raise KeyError(f"Vibench metadata missing target column '{target_column}': {metadata_path}")
+
+    df = df.dropna(subset=[target_column]).reset_index(drop=True)
+    num_classes = int(df[target_column].nunique())
+    setattr(args, "num_classes", num_classes)

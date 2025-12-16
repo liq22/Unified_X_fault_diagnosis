@@ -20,6 +20,10 @@
 
 在本仓库中，我们通过 `vbench_dataset.py` + `vbench_utils.py` 对这些数据做了统一封装。
 
+### 1.1 Dataset_id 目录（本仓库落盘）
+
+- `data/vibench_dataset_catalog.md`：从 `metadata_6_11.xlsx` 提取的 `Dataset_id ↔ Name` 映射表，供各 Paper 统一引用（避免口径漂移）。
+
 ---
 
 ## 2. 核心文件与职责
