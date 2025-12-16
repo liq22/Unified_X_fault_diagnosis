@@ -1,0 +1,16 @@
+Fuzzy-XFD Multi-Seed Validation Report
+==================================================
+
+Generated: 2025-12-15 13:10:56
+
+Number of seeds: 5
+Seeds used: [20, 42, 123, 456, 789]
+
+
+Detailed Results:
+   seed  execution_time  success stdout                                                                                                                                                  stderr
+0    20        5.817704    False          usage: main.py [-h] [--config_dir CONFIG_DIR] [--notes NOTES]\nmain.py: error: unrecognized arguments: --config_file /tmp/config_fuzzy_seed_20.yaml\n
+1    42        6.117810    False          usage: main.py [-h] [--config_dir CONFIG_DIR] [--notes NOTES]\nmain.py: error: unrecognized arguments: --config_file /tmp/config_fuzzy_seed_42.yaml\n
+2   123        6.854342    False         usage: main.py [-h] [--config_dir CONFIG_DIR] [--notes NOTES]\nmain.py: error: unrecognized arguments: --config_file /tmp/config_fuzzy_seed_123.yaml\n
+3   456        5.722855    False         usage: main.py [-h] [--config_dir CONFIG_DIR] [--notes NOTES]\nmain.py: error: unrecognized arguments: --config_file /tmp/config_fuzzy_seed_456.yaml\n
+4   789        4.695499    False         usage: main.py [-h] [--config_dir CONFIG_DIR] [--notes NOTES]\nmain.py: error: unrecognized arguments: --config_file /tmp/config_fuzzy_seed_789.yaml\n

@@ -1,0 +1,6 @@
+{
+  "seed": 42,
+  "numpy_seed": 42,
+  "python_seed": 2147483648,
+  "torch_seed": 42
+}

@@ -1,0 +1,11 @@
+{
+  "pytorch": "2.6.0+cu124",
+  "pytorch_lightning": "2.3.3",
+  "numpy": "1.23.5",
+  "pandas": "1.5.3",
+  "scikit_learn": "1.2.2",
+  "matplotlib": "3.7.0",
+  "seaborn": "0.13.2",
+  "ptwt": "Not installed",
+  "wandb": "0.16.4"
+}

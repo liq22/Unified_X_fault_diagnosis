@@ -1,0 +1,32 @@
+{
+  "os": "Linux",
+  "os_version": "5.15.0-139-generic #149~20.04.1-Ubuntu SMP Wed Apr 16 08:29:56 UTC 2025",
+  "architecture": "x86_64",
+  "cpu": "x86_64",
+  "cpu_count": 144,
+  "memory_gb": 188.50947189331055,
+  "gpu": [
+    "NVIDIA GeForce RTX 4090 (Compute: 8.9)",
+    "NVIDIA GeForce RTX 4090 (Compute: 8.9)",
+    "NVIDIA GeForce RTX 4090 (Compute: 8.9)",
+    "NVIDIA GeForce RTX 4090 (Compute: 8.9)",
+    "NVIDIA GeForce RTX 4090 (Compute: 8.9)",
+    "NVIDIA GeForce RTX 4090 (Compute: 8.9)",
+    "NVIDIA GeForce RTX 4090 (Compute: 8.9)",
+    "NVIDIA GeForce RTX 4090 (Compute: 8.9)"
+  ],
+  "gpu_memory": [
+    23.64288330078125,
+    23.64288330078125,
+    23.64288330078125,
+    23.64288330078125,
+    23.64288330078125,
+    23.64288330078125,
+    23.64288330078125,
+    23.64288330078125
+  ],
+  "cuda_version": "12.4",
+  "cudnn_version": 90100,
+  "python_version": "3.10.0",
+  "pip_version": "23.3.1"
+}

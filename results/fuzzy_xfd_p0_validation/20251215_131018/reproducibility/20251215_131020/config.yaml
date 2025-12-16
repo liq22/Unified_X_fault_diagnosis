@@ -1,0 +1,94 @@
+# FuzzyLogicV2 - 改进的模糊逻辑网络
+signal_processing_configs:
+  layer1: ['I', 'WF', 'I']
+  layer2: ['I', 'WF', 'I']
+  layer3: ['I', 'WF', 'I']
+  layer4: ['I', 'WF', 'I']
+
+feature_extractor_configs: ['Mean', 'Std', 'Var', 'Entropy','Max', 'Min', 'AbsMean', 'Kurtosis', 'RMS', 'CrestFactor','Skewness', 'ClearanceFactor', 'ShapeFactor']
+
+args:
+  # Basic settings
+  mode: 'train'
+  lr_scheduler: true
+  test_run: false
+  seed: 42
+
+  # Dataset settings
+  dataset_task: 'THU_018_basic'
+  target: 'IF'
+  k_shot: 64
+
+  # Model settings
+  model: 'FuzzyLogicV2'  # 使用改进版本
+  in_dim: 4096
+  out_dim: 4096
+  in_channels: 2
+  out_channels: 3
+  scale: 4
+  num_classes: 5
+  skip_connection: true
+
+  # Signal processing parameters
+  f_c_mu: 0
+  f_c_sigma: 0.1
+  f_b_mu: 0
+  f_b_sigma: 0.1
+
+  # Pruning
+  pruning: 0
+
+  # Training parameters
+  learning_rate: 0.001
+  batch_size: 64
+  num_epochs: 100
+  patience: 15
+  l1_norm: 0  # 已移除L1正则化
+  weight_decay: 0.0001  # 添加L2正则化
+  gradient_clip_val: 1.0  # 梯度裁剪
+
+  # Learning rate scheduler
+  scheduler: 'cosine'
+  min_lr: 0.0001
+  T_max: 100
+
+  # Data settings
+  data_dir: '/home/user/data/PHMbenchdata/PHM-Vibench/THU_018/'
+  add_noise: false
+  snr: null
+  test_size: 0.2
+  val_size: 0.1
+
+  # Checkpoint settings
+  save_dir: './save/task_THU_018_basic'
+  monitor: 'val_acc'
+  save_top_k: 3
+
+  # Logging settings
+  project_name: 'FuzzyLogicV2'
+  experiment_name: 'fuzzy_logic_v2_improved'
+  wandb_logger: true
+  progress_bar_refresh_rate: 20
+
+  # Hardware settings
+  gpus: '1'
+  accelerator: 'gpu'
+  devices: 1
+  num_workers: 4
+  precision: 32
+  device: 'cuda:0'
+
+  # FuzzyLogic specific settings
+  num_fuzzy_rules: 50
+  num_membership_functions: 3
+  feature_fusion: 'adaptive'  # 'concat', 'add', 'adaptive'
+
+  # Early stopping
+  early_stopping: true
+  min_delta: 0.001
+
+  # Mixed precision
+  amp_backend: 'native'
+
+  # Profiler
+  profiler: null

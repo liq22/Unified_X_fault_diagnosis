@@ -1,0 +1,30 @@
+{
+  "experiment_id": "20251215_131020",
+  "timestamp": "2025-12-15T13:10:25.565144",
+  "log_entries": [
+    "[2025-12-15T13:10:20.751272] Random seeds set to: 42",
+    "[2025-12-15T13:10:21.578605] System information captured",
+    "[2025-12-15T13:10:25.554987] Library information captured",
+    "[2025-12-15T13:10:25.564775] Model configuration verified",
+    "[2025-12-15T13:10:25.565099] Full configuration saved"
+  ],
+  "files": {
+    "system_info": "system_info.json",
+    "library_info": "library_info.json",
+    "dataset_info": "dataset_info.json",
+    "model_info": "model_info.json",
+    "config": "config.yaml",
+    "environment": "environment.json",
+    "seeds": "seeds.json",
+    "log": "reproducibility.log"
+  },
+  "reproducibility_checklist": {
+    "random_seeds_set": true,
+    "deterministic_algorithms": true,
+    "config_versioned": true,
+    "data_integrity_checked": false,
+    "environment_captured": true,
+    "gpu_determinism": false,
+    "results_saved": false
+  }
+}

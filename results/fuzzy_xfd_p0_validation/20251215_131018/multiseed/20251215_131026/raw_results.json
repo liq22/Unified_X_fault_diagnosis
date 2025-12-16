@@ -1,0 +1,37 @@
+[
+  {
+    "seed": 20,
+    "execution_time": 5.81770396232605,
+    "success": false,
+    "stdout": "",
+    "stderr": "usage: main.py [-h] [--config_dir CONFIG_DIR] [--notes NOTES]\nmain.py: error: unrecognized arguments: --config_file /tmp/config_fuzzy_seed_20.yaml\n"
+  },
+  {
+    "seed": 42,
+    "execution_time": 6.117810487747192,
+    "success": false,
+    "stdout": "",
+    "stderr": "usage: main.py [-h] [--config_dir CONFIG_DIR] [--notes NOTES]\nmain.py: error: unrecognized arguments: --config_file /tmp/config_fuzzy_seed_42.yaml\n"
+  },
+  {
+    "seed": 123,
+    "execution_time": 6.854341983795166,
+    "success": false,
+    "stdout": "",
+    "stderr": "usage: main.py [-h] [--config_dir CONFIG_DIR] [--notes NOTES]\nmain.py: error: unrecognized arguments: --config_file /tmp/config_fuzzy_seed_123.yaml\n"
+  },
+  {
+    "seed": 456,
+    "execution_time": 5.722855091094971,
+    "success": false,
+    "stdout": "",
+    "stderr": "usage: main.py [-h] [--config_dir CONFIG_DIR] [--notes NOTES]\nmain.py: error: unrecognized arguments: --config_file /tmp/config_fuzzy_seed_456.yaml\n"
+  },
+  {
+    "seed": 789,
+    "execution_time": 4.695498943328857,
+    "success": false,
+    "stdout": "",
+    "stderr": "usage: main.py [-h] [--config_dir CONFIG_DIR] [--notes NOTES]\nmain.py: error: unrecognized arguments: --config_file /tmp/config_fuzzy_seed_789.yaml\n"
+  }
+]
