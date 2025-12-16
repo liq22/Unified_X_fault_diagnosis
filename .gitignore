@@ -172,6 +172,9 @@ script/save/
 # 日志文件
 *.log
 wandb/
+# UXFD unified outputs (generated configs, run_meta/metrics, reports)
+outputs/
+runs/
 # 临时文件
 *.tmp
 
